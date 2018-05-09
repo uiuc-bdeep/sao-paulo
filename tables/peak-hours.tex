@@ -1,0 +1,28 @@
+\captionsetup{labelsep=newline}
+\begin{table}[!htbp]
+\centering
+
+\caption{Treatment Effects Interacted With Peak Hour Variables}
+\label{table:peak}
+
+\begin{tabular}{l c c c c}
+\hline
+\hline
+ & Average Effect & Early Peak & Late Peak & Not Peak\\
+ \hline
+ Blocks  & 0.010^{***}& 0.015^{***} & 0.017^{***} & 0.001^{*}\\ 
+  & (0.001) & (0.001) & (0.001) & (0.001)\\ 
+ Floods & 0.015^{***}& 0.028^{***} & 0.022^{***} & 0.002^{***} \\ 
+  & (0.0004) & (0.001) & (0.001) & (0.001)\\ 
+ Spillovers & 0.004^{***} & -0.010^{***} & 0.010^{***} & 0.008^{***}\\ 
+  & (0.0003) & (0.001) & (0.0005) & (0.0005) \\
+\hline
+Trip FE & Yes & Yes & Yes & Yes\\
+Month FE & Yes & Yes & Yes & Yes\\
+Day of Week FE & Yes & Yes & Yes & Yes\\
+Time of Day FE & Yes & Yes & Yes & Yes\\
+\hline
+\hline
+\end{tabular} 
+
+\end{table}

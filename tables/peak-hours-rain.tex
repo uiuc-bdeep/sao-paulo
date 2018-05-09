@@ -1,0 +1,28 @@
+\captionsetup{labelsep=newline}
+\begin{table}[!htbp]
+\centering
+
+\caption{Binned Rain Variables Interacted With Peak Hour Indicator Variables}
+\label{table:peak-rain}
+
+\begin{tabular}{l c c c c}
+\hline
+\hline
+ & Average Effect & Early Peak & Late Peak & Not Peak\\
+ \hline
+ Low Rain &  0.023^{***} & 0.042^{***} & 0.024^{***} & 0.016^{***}\\
+  & (0.0002) & (0.0004) & (0.0003)  & (0.0002) \\  
+ Medium Rain & 0.025^{***} &  0.004^{***} & 0.024^{***} & 0.028^{***} \\ 
+  & (0.0003) & (0.001) &  (0.001) & (0.0004) \\ 
+ Heavy Rain & 0.016^{***} & NA & 0.010^{***} & 0.024^{***}\\ 
+  & (0.0004) & NA & (0.0005)  & (0.001) \\ 
+\hline
+Trip FE & Yes & Yes & Yes & Yes\\
+Month FE & Yes & Yes & Yes & Yes\\
+Day of Week FE & Yes & Yes & Yes & Yes\\
+Time of Day FE & Yes & Yes & Yes & Yes\\
+\hline
+\hline
+\end{tabular} 
+
+\end{table}
