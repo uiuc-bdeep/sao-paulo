@@ -202,7 +202,6 @@ for( i in 1:length(DCV) ){
 
 LD <- mlogit.data(ID_DCV, shape = "wide", choice = "travels")
 
-
 # Discrete Choice Estimation (with car trip dummy interaction) -------------------------------------------------------
 
 LD$year <- as.factor(LD$year)
@@ -215,7 +214,7 @@ f1 <- mFormula(travels ~ 0 | rain_day_D +  car:blocks_count + car:floods_count +
 m1 <- mlogit(f1, LD)
 summary(m1)
 
-f2 <- mFormula(travels ~ 0 | rain_day_D +  car * blocks_count + car * floods_count 
+f2 <- mFormula(travels ~ 0 | rain_day_D +  car:blocks_count + car:floods_count 
                               + year + SUB + morning.peak + evening.peak)
 m2 <- mlogit(f2, LD)
 
