@@ -19,6 +19,7 @@ trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
+coef.path <- "intermediate/floods/iv2-coef.rds"
 out <- "views/floods/"
 
 #   read files
@@ -56,13 +57,19 @@ iv.4 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM + month + wd + h
 iv4.coef <- as.data.frame(summary(iv.4)$coefficients)
 iv4.coef$model <- "iv.4"
 
-
-# getting predicted values manually ------------------------------------------------------------
-
-
-
 #   output -------------------------------------------------------------------------------------
 
+# generate predicted trip durations
+
+trips$pr.time <- trips$tr.time - residuals(iv.4) 
+saveRDS(trips, trips.path)
+
+# save coefficients
+
+coef <- rbind(iv1.coef, iv2.coef, iv3.coef, iv4.coef)
+saveRDS(coef, coef.path)
+
+# LaTeX table
 stargazer(iv.1, iv.2, iv.3, iv.4, 
           align = TRUE,
           type = "latex",
