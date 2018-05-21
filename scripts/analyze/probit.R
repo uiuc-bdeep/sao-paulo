@@ -5,11 +5,12 @@
 #     ------------------------------------------------------------------------
 
 # clear memory
+
 rm(list=ls())
 
 # set working directory
 
-setwd("/Users/Edward/Documents/BDEEP/congestion/floods/")
+setwd("//141.142.208.117/share/projects/Congestion/floods/")
 
 # required packages
 
@@ -27,6 +28,7 @@ HD.path <- "data/combined.rds"
 
 # output
 # table with regression results
+
 out.path <- "views/"
 
 # --------------------------------------------------------------------------------------------------------- #
