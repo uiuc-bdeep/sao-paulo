@@ -36,12 +36,16 @@ iv.1 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM , data = trips)
 iv1.coef <- as.data.frame(summary(iv.1)$coefficients)
 iv1.coef$model <- "iv.1"
 
+rm(iv.1)
+
 # trip + month FE
 
 iv.2 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM + month, data = trips)
 
 iv2.coef <- as.data.frame(summary(iv.2)$coefficients)
 iv2.coef$model <- "iv.2"
+
+rm(iv.2)
 
 # trip + month + day of week FE
 
@@ -50,6 +54,8 @@ iv.3 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM + month + wd, da
 iv3.coef <- as.data.frame(summary(iv.3)$coefficients)
 iv3.coef$model <- "iv.3"
 
+rm(iv.3)
+
 # trip + month + day of week + time of day FE
 
 iv.4 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM + month + wd + hour.f , data = trips)
@@ -57,12 +63,9 @@ iv.4 <- felm(tr.time ~ fitted.blocks + fitted.floods | ID_ORDEM + month + wd + h
 iv4.coef <- as.data.frame(summary(iv.4)$coefficients)
 iv4.coef$model <- "iv.4"
 
+rm(iv.4)
+
 #   output -------------------------------------------------------------------------------------
-
-# generate predicted trip durations
-
-trips$pr.time <- trips$tr.time - residuals(iv.4) 
-saveRDS(trips, trips.path)
 
 # save coefficients
 
