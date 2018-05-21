@@ -1,8 +1,3 @@
-#     ------------------------------------------------------------------------
-#   |                                                                         |
-#   |  Test if rain affects mode choice with 2007 and 2012 Survey data        |
-#   |                                                                         |
-#     ------------------------------------------------------------------------
 
 # clear memory
 
@@ -22,9 +17,9 @@ library(lubridate) # package for manipulating dates
 library(lfe) # package for running fixed effects models
 
 # input
+# data from 2007 & 2012 survey
 
 HD.path <- "data/combined.rds"
-
 
 # output
 # table with regression results
@@ -227,12 +222,12 @@ m2 <- mlogit(f2, LD)
 
 # Rain Bins Day + Number of Blocks / Floods 
 
-f3 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + car * blocks_count 
-                             + car * floods_count + year + month + SUB)
+f3 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + car:blocks_count 
+                             + car:floods_count + year + month + SUB)
 m3 <- mlogit(f3, LD)
 
-f4 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + car * blocks_count 
-                             + car * floods_count + year + SUB + morning.peak + evening.peak)
+f4 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + car:blocks_count 
+                             + car:floods_count + year + SUB + morning.peak + evening.peak)
 m4 <- mlogit(f4, LD)
 
 
@@ -248,45 +243,7 @@ stargazer(m1, m2, m3, m4,
           out = paste0(out.path, "combined.tex"))
 
 
-# Discrete Choice Estimation (without car trip dummy interaction) -------------------------------------------------------
-
-LD$year <- as.factor(LD$year)
-LD$month <- as.factor(LD$month)
-LD$SUB <- as.factor(LD$SUB)
-
-# Rain Day + Number of Blocks / Floods 
-
-f1 <- mFormula(travels ~ 0 | rain_day_D +  blocks_count + floods_count + year + month + SUB)
-m1 <- mlogit(f1, LD)
-
-f2 <- mFormula(travels ~ 0 | rain_day_D +  blocks_count + floods_count 
-                             + year + SUB + morning.peak + evening.peak)
-m2 <- mlogit(f2, LD)
-
-
-# Rain Bins Day + Number of Blocks / Floods 
-
-f3 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + blocks_count 
-                             + floods_count + year + month + SUB)
-m3 <- mlogit(f3, LD)
-
-f4 <- mFormula(travels ~ 0 | rain1_day_D + rain2_day_D + rain3_day_D + blocks_count 
-                             + floods_count + year + SUB + morning.peak + evening.peak)
-m4 <- mlogit(f4, LD)
-
-
-# Output tables -------------------------------------------------------------------
-
-stargazer(m1, m2, m3, m4,
-          type = "latex",
-          dep.var.labels = "Prob. of Taking a Trip",
-          add.lines = list(c("Year FE", "Yes", "Yes", "Yes", "Yes"),
-                           c("Month FE", "Yes", "No", "Yes", "No"),
-                           c("District FE", "Yes", "Yes", "Yes", "Yes")),
-          df = FALSE,
-          out = paste0(out.path, "combined-without.tex"))
-
-# OLS Estimation (with car dummy interactions) -------------------------------------------------------------------
+ OLS Estimation (with car dummy interactions) -------------------------------------------------------------------
 
 
 m1 <- felm(travels ~ rain_day_D +  car + blocks_count + floods_count + car:blocks_count + car:floods_count 
@@ -316,33 +273,3 @@ stargazer(m1, m2, m3, m4,
                            c("District FE", "Yes", "Yes", "Yes", "Yes")),
           df = FALSE,
           out = paste0(out.path, "ols-survey-trips.tex"))
-
-# OLS Estimation (without car dummy interactions) -------------------------------------------------------------------
-
-
-m1 <- felm(travels ~ rain_day_D + blocks_count + floods_count | year + month + SUB, data = ID_DCV)
-summary(m1)
-
-m2 <- felm(travels ~ rain_day_D + blocks_count + floods_count + morning.peak + evening.peak 
-                     | year + month + SUB, data = ID_DCV)
-summary(m2)
-
-m3 <- felm(travels ~ rain1_day_D + rain2_day_D + rain3_day_D+ blocks_count + floods_count 
-                     | year + month + SUB, data = ID_DCV)
-summary(m3)
-
-m4 <- felm(travels ~ rain1_day_D + rain2_day_D + rain3_day_D + blocks_count + floods_count 
-                    + morning.peak + evening.peak | year + month + SUB, data = ID_DCV)
-summary(m4)
-
-# Output tables -------------------------------------------------------------------
-
-stargazer(m1, m2, m3, m4,
-          type = "latex",
-          dep.var.labels = "Prob. of Taking a Trip",
-          add.lines = list(c("Year FE", "Yes", "Yes", "Yes", "Yes"),
-                           c("Month FE", "Yes", "Yes", "Yes", "Yes"),
-                           c("District FE", "Yes", "Yes", "Yes", "Yes")),
-          df = FALSE,
-          out = paste0(out.path, "ols-survey-trips-without.tex"))
-
