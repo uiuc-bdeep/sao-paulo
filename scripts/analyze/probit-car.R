@@ -239,4 +239,4 @@ stargazer(m1, m2, m3, m4,
                            c("Month FE", "Yes", "No", "Yes", "No"),
                            c("District FE", "Yes", "Yes", "Yes", "Yes")),
           df = FALSE,
-          out = paste0(out.path, "combined.tex"))
+          out = paste0(out.path, "probit-car.tex"))
