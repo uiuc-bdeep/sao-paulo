@@ -241,35 +241,3 @@ stargazer(m1, m2, m3, m4,
                            c("District FE", "Yes", "Yes", "Yes", "Yes")),
           df = FALSE,
           out = paste0(out.path, "combined.tex"))
-
-
- OLS Estimation (with car dummy interactions) -------------------------------------------------------------------
-
-
-m1 <- felm(travels ~ rain_day_D +  car + blocks_count + floods_count + car:blocks_count + car:floods_count 
-                     | year + month + SUB, data = ID_DCV)
-summary(m1)
-
-m2 <- felm(travels ~ rain_day_D +  car + blocks_count + floods_count + car:blocks_count + car:floods_count 
-                     + morning.peak + evening.peak | year + month + SUB, data = ID_DCV)
-summary(m2)
-
-m3 <- felm(travels ~ rain1_day_D + rain2_day_D + rain3_day_D + car + blocks_count + floods_count 
-                     + car:blocks_count + car:floods_count | year + month + SUB, data = ID_DCV)
-summary(m3)
-
-m4 <- felm(travels ~ rain1_day_D + rain2_day_D + rain3_day_D + car + blocks_count + floods_count 
-                     + car:blocks_count + car:floods_count + morning.peak + evening.peak 
-                     | year + month + SUB, data = ID_DCV)
-summary(m4)
-
-# Output tables -------------------------------------------------------------------
-
-stargazer(m1, m2, m3, m4,
-          type = "latex",
-          dep.var.labels = "Prob. of Taking a Trip",
-          add.lines = list(c("Year FE", "Yes", "Yes", "Yes", "Yes"),
-                           c("Month FE", "Yes", "Yes", "Yes", "Yes"),
-                           c("District FE", "Yes", "Yes", "Yes", "Yes")),
-          df = FALSE,
-          out = paste0(out.path, "ols-survey-trips.tex"))
