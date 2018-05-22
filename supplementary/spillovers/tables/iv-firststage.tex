@@ -1,0 +1,30 @@
+\captionsetup{labelsep=newline}
+\begin{table}[!htbp]
+\centering
+
+\caption{IV First Stage Results}
+\label{table:iv1}
+
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
+\hline 
+\hline 
+ & \multicolumn{3}{c}{Event Duration (minutes)} \\
+ & \multicolumn{1}{c}{Blocks} & \multicolumn{1}{c}{Floods} & \multicolumn{1}{c}{Spillovers}\\ 
+\hline \\[-1.8ex] 
+ Low Rain & 206.844^{***}  & 199.765^{***} & 204.311^{***} \\ 
+  & (2.039) & (1.842) &  (1.380) \\  
+ Medium Rain & 166.698^{***} &  170.141^{***} &  133.302^{***} \\  
+  & (3.860) &  (3.345) & (2.306) \\ 
+ Heavy Rain & 72.265^{***} &  74.928^{***} &   82.091^{***} \\  
+  & (3.647) &  (3.246) &  (2.293) \\ 
+\hline 
+Trip FE & No & No & No\\
+Month FE & Yes & Yes & Yes \\
+Day of Week FE & Yes & Yes & Yes \\
+Time of Day FE & Yes & Yes & Yes \\
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+
+\end{table}
