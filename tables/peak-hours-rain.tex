@@ -8,21 +8,28 @@
 \begin{tabular}{l c c c c}
 \hline
 \hline
+ & \multicolumn{4}{c}{ln (Trip Duration)} \\
  & Average Effect & Early Peak & Late Peak & Not Peak\\
  \hline
- Low Rain &  0.023^{***} & 0.042^{***} & 0.024^{***} & 0.016^{***}\\
-  & (0.0002) & (0.0004) & (0.0003)  & (0.0002) \\  
- Medium Rain & 0.025^{***} &  0.004^{***} & 0.024^{***} & 0.028^{***} \\ 
-  & (0.0003) & (0.001) &  (0.001) & (0.0004) \\ 
- Heavy Rain & 0.016^{***} & NA & 0.010^{***} & 0.024^{***}\\ 
-  & (0.0004) & NA & (0.0005)  & (0.001) \\ 
-\hline
-Trip FE & Yes & Yes & Yes & Yes\\
-Month FE & Yes & Yes & Yes & Yes\\
-Day of Week FE & Yes & Yes & Yes & Yes\\
-Time of Day FE & Yes & Yes & Yes & Yes\\
-\hline
-\hline
+ Low Rain &  0.023^{***} & 0.047^{***} & 0.008^{***} & 0.023^{***}\\
+  & (0.001) & (0.002) & (0.002)  & (0.0009) \\  
+ Medium Rain & 0.032^{***} &  0.018^{***} & 0.026^{***} & 0.037^{***} \\ 
+  & (0.001) & (0.005) &  (0.003) & (0.002) \\ 
+ Heavy Rain & 0.011^{***} & NA & -0.007 & 0.032^{***}\\ 
+  & (0.003) & NA & (0.004)  & (0.003) \\ 
+\hline \\[-1.8ex] 
+Trip FE & Y & Y & Y & Y \\ 
+Month FE & N & Y & Y & Y \\ 
+Day of Week FE & N & N & Y & Y \\ 
+Hour FE & N & N & No & Y \\ 
+Observations & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} \\ 
+Residual Std. Error & \multicolumn{1}{c}{0.096} & \multicolumn{1}{c}0.096} & \multicolumn{1}{c}{0.096} & \multicolumn{1}{c}{0.096} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+ & \multicolumn{4}{r}{Standard errors are clustered at the trip level.}\\
 \end{tabular} 
 
 \end{table}
