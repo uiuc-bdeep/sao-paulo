@@ -7,23 +7,32 @@
 
 \begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
 \\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+\\[-1.8ex] & \multicolumn{4}{c}{ln(Trip Duration)} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
+\hline \\[-1.8ex] 
+ Light Rain & 0.006^{***} & 0.013^{***} & 0.013^{***} & 0.023^{***} \\ 
+  & (0.001) & (0.001) & (0.001) & (0.001) \\ 
+  & & & & \\ 
+ Moderate Rain & 0.023^{***} & 0.032^{***} & 0.032^{***} & 0.032^{***} \\ 
+  & (0.002) & (0.002) & (0.002) & (0.001) \\ 
+  & & & & \\ 
+ Heavy Rain & 0.009^{***} & 0.015^{***} & 0.015^{***} & 0.011^{***} \\ 
+  & (0.003) & (0.003) & (0.003) & (0.003) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Trip FE & Y & Y & Y & Y \\ 
+Month FE & N & Y & Y & Y \\ 
+Day of Week FE & N & N & Y & Y \\ 
+Hour FE & N & N & No & Y \\ 
+Observations & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.990} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.987} & \multicolumn{1}{c}{0.990} \\ 
+Residual Std. Error & \multicolumn{1}{c}{0.109} & \multicolumn{1}{c}{0.107} & \multicolumn{1}{c}{0.107} & \multicolumn{1}{c}{0.096} \\ 
 \hline 
- & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
-\hline \\[-1.8ex] 
- Low Rain & 0.013^{***} & 0.017^{***} & 0.017^{***} & 0.023^{***} \\ 
-  & (0.0002) & (0.0002) & (0.0002) & (0.0002) \\ 
- Medium Rain & 0.013^{***} & 0.017^{***} & 0.017^{***} & 0.025^{***} \\ 
-  & (0.0003) & (0.0003) & (0.0003) & (0.0003) \\ 
- Heavy Rain & 0.013^{***} & 0.017^{***} & 0.017^{***} & 0.016^{***} \\ 
-  & (0.0004) & (0.0004) & (0.0004) & (0.0004) \\ 
-\hline \\[-1.8ex] 
-Trip FE & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes}\\
-Month FE  & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} \\
-Day of Week FE  & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes}\\
-Time of Day FE & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes}\\
-\hline \\[-1.8ex] 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
-\end{tabular} 
+ & \multicolumn{4}{r}{Standard errors are clustered at the trip level.}\\
+\end{tabular}  
 
 \end{table}
