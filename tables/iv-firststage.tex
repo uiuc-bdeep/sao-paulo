@@ -5,26 +5,30 @@
 \caption{IV First Stage Results}
 \label{table:iv1}
 
-\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} } 
 \hline 
 \hline 
- & \multicolumn{3}{c}{Event Duration (minutes)} \\
- & \multicolumn{1}{c}{Blocks} & \multicolumn{1}{c}{Floods} & \multicolumn{1}{c}{Spillovers}\\ 
+ & \multicolumn{2}{c}{Average Event Duration Per Trip (minutes)} \\
+ & \multicolumn{1}{c}{Blocks} & \multicolumn{1}{c}{Floods}\\ 
 \hline \\[-1.8ex] 
- Low Rain & 206.844^{***}  & 199.765^{***} & 204.311^{***} \\ 
-  & (2.039) & (1.842) &  (1.380) \\  
- Medium Rain & 166.698^{***} &  170.141^{***} &  133.302^{***} \\  
-  & (3.860) &  (3.345) & (2.306) \\ 
- Heavy Rain & 72.265^{***} &  74.928^{***} &   82.091^{***} \\  
-  & (3.647) &  (3.246) &  (2.293) \\ 
-\hline 
-Trip FE & No & No & No\\
-Month FE & Yes & Yes & Yes \\
-Day of Week FE & Yes & Yes & Yes \\
-Time of Day FE & Yes & Yes & Yes \\
+ Light Rain & 557.966^{***} & 478.837^{***} \\
+  & (29.593) & (23.440) \\
+ Moderate Rain & 389.084^{***} & 347.957^{***}\\
+  & (61.656) & (47.428) \\ 
+ Heavy Rain & 293.066^{***} & 255.172^{***} \\
+  & (37.010) & (29.555) \\
+\hline \\[-1.8ex] 
+Trip FE & N & N \\ 
+Month FE & Y & Y \\ 
+Day of Week FE & Y & Y \\ 
+Hour FE & Y & Y \\ 
+Observations & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.124} & \multicolumn{1}{c}{0.104} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.124} & \multicolumn{1}{c}{0.104} \\ 
+Residual Std. Error & \multicolumn{1}{c}{63.753} & \multicolumn{1}{c}{75.247} \\ 
 \hline 
 \hline \\[-1.8ex] 
-\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+ & \multicolumn{2}{r}{Standard errors are clustered at the trip level} \\ 
 \end{tabular} 
-
-\end{table}
+\end{table} 
