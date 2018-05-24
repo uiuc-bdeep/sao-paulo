@@ -5,24 +5,30 @@
 \caption{Treatment Effects Interacted With Peak Hour Variables}
 \label{table:peak}
 
-\begin{tabular}{l c c c c}
-\hline
-\hline
+\begin{tabular}{l c c c c} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{ln(Trip Duration)} \\
  & Average Effect & Early Peak & Late Peak & Not Peak\\
- \hline
- Blocks  & 0.010^{***}& 0.015^{***} & 0.017^{***} & 0.001^{*}\\ 
-  & (0.001) & (0.001) & (0.001) & (0.001)\\ 
- Floods & 0.015^{***}& 0.028^{***} & 0.022^{***} & 0.002^{***} \\ 
-  & (0.0004) & (0.001) & (0.001) & (0.001)\\ 
- Spillovers & 0.004^{***} & -0.010^{***} & 0.010^{***} & 0.008^{***}\\ 
-  & (0.0003) & (0.001) & (0.0005) & (0.0005) \\
-\hline
-Trip FE & Yes & Yes & Yes & Yes\\
-Month FE & Yes & Yes & Yes & Yes\\
-Day of Week FE & Yes & Yes & Yes & Yes\\
-Time of Day FE & Yes & Yes & Yes & Yes\\
-\hline
-\hline
+ \hline\\[-1.8ex] 
+ Blocks  & -0.002 & 0.012^{***} & -0.013^{**} & -0.005\\ 
+  & (0.002) & (0.004) & (0.004) & (0.003)\\ 
+  & \\
+ Floods & 0.002 & 0.028^{***} & -0.027^{***} & -0.002 \\ 
+  & (0.0002) & (0.004) & (0.004) & (0.002)\\ 
+\\[-1.8ex] \hline \\[-1.8ex] 
+Trip FE & Y & Y & Y & Y\\
+Month FE & Y & Y & Y & Y\\
+Day of Week FE & Y & Y & Y & Y\\
+Hour FE & Y & Y & Y & Y\\
+Observations & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} \\ 
+Residual Std. Error & \multicolumn{1}{c}{0.096} & \multicolumn{1}{c}{0.096} & \multicolumn{1}{c}{0.096} & \multicolumn{1}{c}{0.096} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+ & \multicolumn{4}{r}{Standard errors are clustered at the trip level}\\
 \end{tabular} 
 
 \end{table}
