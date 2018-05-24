@@ -1,0 +1,30 @@
+\begin{table}[!htbp] \centering 
+  \caption{Effect of Rain on Travel Time (Excluding 0s)} 
+  \label{table:rain0} 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+\\[-1.8ex] & \multicolumn{4}{c}{ln(Trip Duration)} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
+\hline \\[-1.8ex] 
+ Medium Rain & 0.016^{***} & 0.016^{***} & 0.016^{***} & 0.008^{***} \\ 
+  & (0.002) & (0.002) & (0.002) & (0.002) \\ 
+  & & & & \\ 
+ Heavy Rain & 0.010^{***} & 0.013^{***} & 0.013^{***} & 0.008^{**} \\ 
+  & (0.004) & (0.003) & (0.003) & (0.003) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Trip FE & Y & Y & Y & Y \\ 
+Month FE & N & Y & Y & Y \\ 
+Day of Week FE & N & N & Y & Y \\ 
+Hour FE & N & N & N & Y \\ 
+Observations & \multicolumn{1}{c}{78,913} & \multicolumn{1}{c}{78,913} & \multicolumn{1}{c}{78,913} & \multicolumn{1}{c}{78,913} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.991} & \multicolumn{1}{c}{0.991} & \multicolumn{1}{c}{0.991} & \multicolumn{1}{c}{0.993} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.990} & \multicolumn{1}{c}{0.992} \\ 
+Residual Std. Error & \multicolumn{1}{c}{0.094} & \multicolumn{1}{c}{0.092} & \multicolumn{1}{c}{0.092} & \multicolumn{1}{c}{0.081} \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+ & \multicolumn{4}{r}{Standard errors are clustered at the trip level}\\
+\end{tabular} 
+\end{table} 
