@@ -37,18 +37,7 @@ out <- "documents/working paper/floods/tables/"
 
 trips <- readRDS(trips.path)
 
-# first stage  -------------------------------------------------------------------------
-
-# blocks
-
-iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
-
-# floods
-
-iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
-
-
-# second stage ---------------------------------------------------------------------------------
+# second stage with peak hour indicators -------------------------------------------------------
 
 # trip FE 
 # cluster standard errors at trip level
