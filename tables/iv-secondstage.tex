@@ -7,23 +7,28 @@
 
 \begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} } 
 \\[-1.8ex]\hline 
-\hline  
- & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
 \hline \\[-1.8ex] 
- pr.Blocks & 0.003^{***} & 0.003^{***} & 0.003^{***} & 0.003^{***} \\ 
-  & (0.0001) & (0.0001) & (0.0001) & (0.0001) \\ 
- pr.Floods & 0.004^{***} & 0.004^{***} & 0.004^{***} & 0.004^{***} \\ 
-  & (0.0001) & (0.0001) & (0.0001) & (0.0001) \\ 
- pr.Spillovers & 0.001^{***} & 0.001^{***} & 0.001^{***} & 0.001^{***} \\ 
-  & (0.0001) & (0.0001) & (0.0001) & (0.0001) \\ 
+\\[-1.8ex] & \multicolumn{4}{c}{ln(Trip Duration)} \\ 
+\\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\ 
 \hline \\[-1.8ex] 
-Trip FE & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes}\\
-Month FE  & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes} \\
-Day of Week FE  & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{Yes}\\
-Time of Day FE & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{No} & \multicolumn{1}{c}{Yes}\\
+ pr.Blocks & -0.001^{**} & 0.001^{***} & 0.001^{***} & 0.001^{***} \\ 
+  & (0.0003) & (0.0003) & (0.0003) & (0.0002) \\ 
+  & & & & \\ 
+ pr.Floods & -0.001^{***} & 0.001^{***} & 0.001^{***} & 0.002^{***} \\ 
+  & (0.0003) & (0.0003) & (0.0003) & (0.0003) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Trip FE & Y & Y & Y & Y \\ 
+Month FE & N & Y & Y & Y \\ 
+Day of Week FE & N & N & Y & Y \\ 
+Hour FE & N & N & N & Y \\ 
+Observations & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} & \multicolumn{1}{c}{1,121,115} \\ 
+R$^{2}$ & \multicolumn{1}{c}{0.967} & \multicolumn{1}{c}{0.968} & \multicolumn{1}{c}{0.968} & \multicolumn{1}{c}{0.973} \\ 
+Adjusted R$^{2}$ & \multicolumn{1}{c}{0.967} & \multicolumn{1}{c}{0.967} & \multicolumn{1}{c}{0.967} & \multicolumn{1}{c}{0.972} \\ 
+Residual Std. Error & \multicolumn{1}{c}{3.106} & \multicolumn{1}{c}{3.075} & \multicolumn{1}{c}{3.075} & \multicolumn{1}{c}{2.828} \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+ & \multicolumn{4}{r}{Standard errors are clustered at the trip level} \\ 
 \end{tabular} 
-
-\end{table}
+\end{table} 
