@@ -12,6 +12,8 @@
 #   |                                                                                         |
 #     ----------------------------------------------------------------------------------------
 
+# Edited on 05/27/2018 to use generate flood variables for crawled trips (all modes)
+
 # Clear workspace
 
 rm(list=ls())
@@ -49,8 +51,11 @@ routes.path <- "routes buffer"
 # 2012 survey data 
 master.path <- "intermediate/floods/master.rds"
 
-# 2016 - 2017 crawled trips data
-analysis.path <- "intermediate/floods/analysis data.rds"
+# 2016 - 2017 crawled trips data (car trips only)
+# analysis.path <- "intermediate/floods/analysis data.rds"
+
+# 2016 - 2017 crawled trips data (all modes)
+analysis.path <- "intermediate/floods/analysis data - all modes.rds"
 
 # Hourly average rain data (INMET)
 rain.path <- "stores/floods/rain/rain.rds"
