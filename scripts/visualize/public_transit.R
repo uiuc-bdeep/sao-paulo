@@ -8,13 +8,19 @@
 #   Date: 04/11/2018                                                                   #
 # ------------------------------------------------------------------------------------ #
 
+# Edited on 05/25/2018 to include clustering standard errors and removing residuals from plot
+# Converted density plot to histogram plot
+
+# Edited on 05/27/2018 to use crawled trips for all modes of transportation instead of only car trips
+
+
 # Clear workspace
 
 rm(list = ls())
 
 # Set working directory
 
-setwd("//141.142.208.117/share/projects/Congestion/")
+setwd("/home/bdeep/share/projects/Congestion/")
 
 # Function for loading packages
 
@@ -49,6 +55,9 @@ transit.path <- "intermediate/floods/google trips.csv"
 # Crawled private transit trips
 trips.path <- "intermediate/floods/floods-model.rds"
 
+# Coefficients from IV Second Stage
+coef.path <- "intermediate/floods/iv2-coef.rds"
+
 # Output
 
 out.path <- "views/floods/"
@@ -63,18 +72,10 @@ transit <- as.data.table(transit)
 trips <- readRDS(trips.path)
 trips <- as.data.table(trips)
 
-# Predicted values 
+coef <- readRDS(coef.path)
+coef <- coef[which(coef$model == "iv.4"),]
 
-iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 | month + wd + hour.f, data = trips)
-
-iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 | month + wd + hour.f, data = trips)
-
-trips$pr.blocks <- fitted(iv.1)
-trips$pr.floods <- fitted(iv.2)
-
-iv.3 <- felm(tr.time ~ pr.blocks + pr.floods | ID_ORDEM + month + wd + hour.f , data = trips)
-
-coef <- as.data.frame(summary(iv.3)$coefficients)
+# generate predicted travel time using second stage coefficients
 
 trips$pr.time <- trips$tr.time * (1 + coef[[1]] + coef[[2]])
 
@@ -86,7 +87,6 @@ transit <- transit[,c("ID_ORDEM",
 
 trips <- trips[,c("TID",
                   "ID_ORDEM",
-                  "rain.date",
                   "wd",
                   "hour",
                   "tr.time",
@@ -98,11 +98,7 @@ trips <- trips[,c("TID",
 
 transit$query_timestamp <- format(as.POSIXct(strptime(transit$query_timestamp,"%Y-%m-%d %H:%M",tz="")), format = "%Y-%m-%d %H:%M")
 
-trips[,c("date", "time")] <- str_split_fixed(trips$rain.date, " ", 2)
 transit[,c("date", "time")] <- str_split_fixed(transit$query_timestamp, " ", 2)
-
-trips$date <- format(as.POSIXct(strptime(trips$date,"%Y-%m-%d",tz="")), format = "%Y-%m-%d")
-trips$date <- as.Date(trips$date)
 
 transit$date <- format(as.POSIXct(strptime(transit$date,"%Y-%m-%d",tz="")), format = "%Y-%m-%d")
 transit$date <- as.Date(transit$date)
@@ -128,48 +124,6 @@ trips <- trips[!is.na(trips$google.transit_time),]
 trips$pub_tr.time <- trips$google.transit_time / 60
 trips$diff.time <- trips$pub_tr.time - trips$tr.time
 
-trips$residuals <- trips$pr.time - trips$tr.time
-
-# Use 'density' function instead of geom_density to generate density of diff.time manually
-# This ensures that the plotted density adheres to maximum and minimum values of the data 
-# geom_density smoothes the densities such that the plot shows values below 0 when in fact there are none
-
-blocks <- trips[which(trips$blocks == 1),]
-
-ggplot(blocks) +
-  ggtitle("Blocks",
-          subtitle = "Difference in Public and Private Transit Times") +
-  ylab("Density") +
-  xlab("Difference in Transit Time \n (Minutes)") +
-  geom_density(aes(diff.time, ..scaled..,
-                   fill = "Google"), color = NA) + 
-  geom_density(aes(residuals, ..scaled..,
-                   fill = "Our Model"), color = NA) +
-  theme_bw() +
-  theme(legend.title = element_blank(),
-        legend.position = "bottom")
-
-ggsave(paste0(out.path, "diff-blocks.png"),
-       width = 8, height = 5, dpi = 300)
-
-floods <- trips[which(trips$floods == 1),]
-
-ggplot(floods) +
-  ggtitle("Floods",
-          subtitle = "Difference in Public and Private Transit Times") +
-  ylab("Density") +
-  xlab("Difference in Transit Time \n (Minutes)") +
-  geom_density(aes(diff.time, ..scaled..,
-                   fill = "Google"), color = NA) +
-  geom_density(aes(residuals, ..scaled..,
-                   fill = "Our Model"), color = NA) +
-  theme_bw() +
-  theme(legend.title = element_blank(),
-        legend.position = "bottom")
-
-ggsave(paste0(out.path, "diff-floods.png"),
-       width = 8, height = 5, dpi = 300)
-
 # create LaTeX table for summary statistics -----------------------------------------------------------------
 
 trips$b.diff.time <- ifelse(trips$blocks == 1, trips$diff.time, NA)
@@ -192,29 +146,9 @@ names(summary)[which(names(summary) == "f.diff.time")] <- "Floods"
 names(summary)[which(names(summary) == "nof.diff.time")] <- "No Floods"
 
 names(summary)[which(names(summary) == "diff.time")] <- "Whole Sample"
-names(summary)[which(names(summary) == "residuals")] <- "Estimated Added Travel Time From Floods"
 
 stargazer(summary,
           type = "latex",
           summary = TRUE,
           out = paste0(out.path, "tr_time.tex"))
-
-# Plot added travel time due to blocks / floods -------------------------------------------------
-
-
-ggplot(trips) + 
-  ggtitle("Whole Sample",
-          subtitle = "Difference between public and private transit times") +
-  geom_density(aes(diff.time, ..scaled..,
-                   fill = "Google"), color = NA) +
-  geom_density(aes(residuals, ..scaled..,
-                   fill = "Our Model"), color = NA) +
-  xlab("Minutes") +
-  ylab("Density") +
-  coord_cartesian(xlim = c(0, 100)) +
-  theme_bw() +
-  theme(legend.title = element_blank(),
-        legend.position = "bottom")
-
-ggsave(paste0(out.path, "whole-sample.png"), width = 8, height = 5, dpi = 300)
 
