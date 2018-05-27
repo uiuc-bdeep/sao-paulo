@@ -42,14 +42,14 @@ lapply(packages, pkgTest)
 # Input
 
 # 2016 - 2017 Floods 
-flood.path <- "stores/floods/Alag 1617 (1).csv"
+flood.path <- "intermediate/floods/floods.rds"
 
-# 2012 survey trip routes via private car
+# 2012 survey trip routes (all modes) via private car
 routes.dsn <- "stores/floods/"
 routes.path <- "routes buffer"
 
 # 2012 survey data 
-master.path <- "intermediate/floods/master.rds"
+master.path <- "intermediate/floods/2012-trips.rds"
 
 # 2016 - 2017 crawled trips data (car trips only)
 # analysis.path <- "intermediate/floods/analysis data.rds"
@@ -187,6 +187,10 @@ RD200.df <- cbind(RD200.df, intersect)
 # Read survey trips dataset (TD = Trips Data)
 
 TD <- readRDS(master.path)
+TD <- as.data.table(TD[,c("ID_ORDEM")])
+
+names(TD)[names(TD) == "V1"] <- "ID_ORDEM"
+
 
 # Merge floods + trips dataset with master trips dataset
 # This gives us the set of survey trips that intersect spatially with blocks / floods 
@@ -196,11 +200,6 @@ TD <- merge(RD200.df, TD, by = "ID_ORDEM", all = TRUE)
 # read crawled trips dataset 
 
 AD <- readRDS(analysis.path)
-
-# Create ID variable
-
-AD$TID <- seq.int(nrow(AD))
-
 
 # Convert into data table to make merge more efficient
 
@@ -235,6 +234,23 @@ AD$blocked[which(is.na(AD$blocked))] <- 0
 
 AD$no.flood <- ifelse(AD$flooded == 0 & AD$blocked == 0, 1, 0)
 summary(AD$no.flood)
+
+# Generate variable for crawled trip start time
+
+hour_minute <- as.data.table(str_split_fixed(AD$hour_minute, "_", 2))
+names(hour_minute)[names(hour_minute) == "V2"] <- "minute"
+AD <- cbind(AD, hour_minute$minute)
+
+AD$start.time <- ISOdatetime(year = AD$year,
+                              month = AD$month,
+                              day = AD$day,
+                              hour = AD$hour,
+                              min = AD$minute,
+                              sec = 0,
+                              tz ="")
+
+AD$start.time <- format(as.POSIXct(strptime(AD$start.time,"%Y-%m-%d %H:%M",tz=""), format = "%Y-%m-%d %H:%M"))
+
 
 # Generate variable for AD that occur in same time as AD and blocked
 
