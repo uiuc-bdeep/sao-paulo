@@ -1,3 +1,13 @@
+# ----------------------------------------------------------------------------------------------------- #
+#                                                                                                       #
+# Regress log of travel time on indicators for blocks and floods                                        #
+#                                                                                                       #
+#                                                                                                       #
+# Created by: Amanda Ang                                                                                #
+#             Big Data Environmental Economics and Policy Group                                         #
+# ----------------------------------------------------------------------------------------------------- #
+
+# Edited on 05/29/2018
 
 # clear workspace 
 
@@ -6,7 +16,7 @@ gc()
 
 # set working directory
 
-setwd("~/share/projects/Congestion/")
+setwd("/home/bdeep/share/projects/Congestion/")
 source("intermediate/floods/environment.R")
 
 #   loading packages
@@ -16,43 +26,54 @@ lapply(packages, pkgTest)
 
 #   input
 
-trips.path <- "intermediate/floods/date-merge.rds"
-floods.path <- "intermediate/floods/floods.rds"
+trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
-coef.path <- "intermediate/floods/coef.rds"
+out.path <- "views/floods/"
 
 #   read files
 
 trips <- readRDS(trips.path)
-floods <- readRDS(floods.path)
 
 # trip FE --------------------------------------------------------------------------------------
 
-m1 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM, data = trips)
-m1.coef <- as.data.frame(summary(m1)$coefficients)
-m1.coef$model <- "m1"
-rm(m1)
+m1 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month FE ------------------------------------------------------------------------------
 
-m2 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month, data = trips)
-m2.coef <- as.data.frame(summary(m2)$coefficients)
-m2.coef$model <- "m2"
-rm(m2)
+m2 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month + day of week FE ----------------------------------------------------------------
 
-m3 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month + wd, data = trips)
-m3.coef <- as.data.frame(summary(m3)$coefficients)
-m3.coef$model <- "m3"
-rm(m3)
+m3 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month + day of week + time of day FE --------------------------------------------------
 
-m4 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month + wd + hour.f, data = trips)
-m4.coef <- as.data.frame(summary(m4)$coefficients)
-m4.coef$model <- "m4"
-rm(m4)
+m4 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+
+# reduced form model with peak hour interactions -----------------------------------------------
+
+m5 <- felm(ln_tr.time ~ blocks:early.peak + floods:early.peak + 
+                        blocks:late.peak + floods:late.peak + 
+                        blocks:not.peak + floods:not.peak | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+# output ----------------------------------------------------------------------------------------
+
+stargazer(m1, m2, m3, m4,
+          align = TRUE,
+          type = "latex",
+          df = FALSE,
+          dep.var.label = "ln(Trip Duration)",
+          out = paste0(out.path, "reduced-form.tex"),
+          notes = "Standard errors clustered at trip level.",
+          add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
+                           c("Month FE", "N", "Y", "Y", "Y"),
+                           c("Day of Week FE", "N", "N", "Y", "Y"),
+                           c("Hour FE", "N", "N", "N", "N")))
+
 
