@@ -44,15 +44,24 @@ trips <- readRDS(trips.path)
 
 iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
+# generate predicted values for blocks 
+trips$fitted.blocks <- fitted(iv.1)
+
 # floods
 # fduration.mean = average flood duration per trip (trips may encounter more than one flood) 
 
 iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
+# generate predicted values for floods
+trips$fitted.floods <- fitted(iv.2)
+
 # spillovers
 # mean = average duration of blocks and floods per trip 
 
 iv.3 <- felm(mean ~ spillovers:rain.bins1 + spillovers:rain.bins2 + spillovers:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+# generate predicted values for spillovers 
+trips$fitted.spill <- fitted(iv.3)
 
 # output ----------------------------------------------------------------------------------------
 
