@@ -50,7 +50,7 @@ lapply(packages, pkgTest)
 # Inputs
 
 # Crawled public transit times
-transit.path <- "intermediate/floods/google trips.csv"
+transit.path <- "intermediate/floods/analysis data (all modes - May 2018).rds"
 
 # Crawled private transit trips
 trips.path <- "intermediate/floods/floods-model.rds"
