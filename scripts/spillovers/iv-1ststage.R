@@ -59,5 +59,6 @@ iv.3 <- felm(mean ~ spillovers:rain.bins1 + spillovers:rain.bins2 + spillovers:r
 stargazer(iv.1, iv.2, iv.3,  
           align = TRUE,
           type = "latex",
-          title = "IV 1st Stage",
+          df = FALSE,
+          notes = "Standard errors are clustered at the trip level.",
           out = paste0(out.path, "iv-1ststage.tex"))
