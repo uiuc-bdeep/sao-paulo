@@ -50,7 +50,7 @@ lapply(packages, pkgTest)
 # Inputs
 
 # Crawled public transit times
-transit.path <- "intermediate/floods/analysis data (all modes - May 2018).rds"
+transit.path <- "intermediate/floods/google trips.csv"
 
 # Crawled private transit trips
 trips.path <- "intermediate/floods/floods-model.rds"
@@ -136,8 +136,7 @@ summary <- trips[,c("b.diff.time",
                     "nob.diff.time",
                     "f.diff.time",
                     "nof.diff.time",
-                    "diff.time",
-                    "residuals")]
+                    "diff.time")]
 
 names(summary)[which(names(summary) == "b.diff.time")] <- "Blocks"
 names(summary)[which(names(summary) == "nob.diff.time")] <- "No Blocks"
@@ -151,4 +150,17 @@ stargazer(summary,
           type = "latex",
           summary = TRUE,
           out = paste0(out.path, "tr_time.tex"))
+
+# plot histogram of difference in transit time ---------------------------------------------------------------
+
+ggplot(trips) +
+  geom_histogram(aes(diff.time), binwidth = 1) +
+  geom_vline(aes(xintercept = 0), color = "grey70", size = 0.5) +
+  xlab("Difference in transit time (Minutes)") + 
+  ylab("Number of Crawled Trips") + 
+  ggtitle("Difference in transit time",
+          subtitle = "Public and private transit trips crawled in November 2016") + 
+  theme_bw()
+
+ggsave(paste0(out.path, "tr-time.png"), width = 8, height = 5, dpi = 300)
 
