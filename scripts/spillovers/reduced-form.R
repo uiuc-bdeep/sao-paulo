@@ -1,6 +1,6 @@
 #     ----------------------------------------------------------------------------------------
 #   |                                                                                         |
-#   |  Run reduced form model  (large dataset)                                                |
+#   |  Run reduced form model with spillovers                                                 |
 #   |                                                                                         |
 #   |  By:                                                                                    |
 #   |  Amanda Ang                                                                             |
@@ -53,7 +53,17 @@ m4 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month + wd + h
 
 # output ---------------------------------------------------------------------------------------
 
-stargazer(m1, m2, m3, m4, align = TRUE)
+stargazer(m1, m2, m3, m4,
+          align = TRUE,
+          type = "latex",
+          df = FALSE,
+          dep.var.label = "ln(Trip Duration)",
+          out = paste0(out.path, "reduced-form.tex"),
+          notes = "Standard errors clustered at trip level.",
+          add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
+                           c("Month FE", "N", "Y", "Y", "Y"),
+                           c("Day of Week FE", "N", "N", "Y", "Y"),
+                           c("Hour FE", "N", "N", "N", "N")))
 
 # peak hour ------------------------------------------------------------------------------------
 
