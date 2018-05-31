@@ -30,7 +30,9 @@ trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
+coef.path <- "intermediate/floods/iv1-coef.rds"
 out.path <- "views/floods/spillovers/"
+
 
 #   read files
 
@@ -47,6 +49,10 @@ iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain
 # generate predicted values for blocks 
 trips$fitted.blocks <- fitted(iv.1)
 
+# save coefficients
+iv1.coef <- as.data.frame(summary(iv.1)$coefficients)
+iv1.coef$model <- "iv.1"
+
 # floods
 # fduration.mean = average flood duration per trip (trips may encounter more than one flood) 
 
@@ -54,6 +60,10 @@ iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rai
 
 # generate predicted values for floods
 trips$fitted.floods <- fitted(iv.2)
+
+# save coefficients 
+iv2.coef <- as.data.frame(summary(iv.2)$coefficients)
+iv2.coef$model <- "iv.2"
 
 # spillovers
 # mean = average duration of blocks and floods per trip 
@@ -63,7 +73,14 @@ iv.3 <- felm(mean ~ spillovers:rain.bins1 + spillovers:rain.bins2 + spillovers:r
 # generate predicted values for spillovers 
 trips$fitted.spill <- fitted(iv.3)
 
+# save coefficients
+iv3.coef <- as.data.frame(summary(iv.3)$coefficients)
+iv3.coef$model <- "iv.3"
+
 # output ----------------------------------------------------------------------------------------
+
+coef <- rbind(iv1.coef, iv2.coef, iv3.coef)
+saveRDS(coef, coef.path)
 
 stargazer(iv.1, iv.2, iv.3,  
           type = "latex",
