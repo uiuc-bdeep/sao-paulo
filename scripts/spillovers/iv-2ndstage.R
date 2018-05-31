@@ -79,7 +79,6 @@ saveRDS(coef, coef.path)
 
 # LaTeX table
 stargazer(iv.1, iv.2, iv.3, iv.4, 
-          align = TRUE,
           type = "latex",
           df = FALSE,
           title = "IV Second Stage",
