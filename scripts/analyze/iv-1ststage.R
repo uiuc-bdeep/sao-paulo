@@ -49,11 +49,13 @@ trips$fduration1 <- as.numeric(as.character(trips$fduration1))
 
 # blocks
 
-iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 + rain
+             | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # floods
 
-iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 + rain
+             | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # output ----------------------------------------------------------------------------------------
 
