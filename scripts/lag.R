@@ -1,11 +1,9 @@
 trips <- readRDS("intermediate/floods/floods-model.rds") 
 
-trips$lag.rain.bins <- ifelse(trips$lag5 == 0, "0",
-                            ifelse(trips$lag5 <= 2.5, "1",
-                               ifelse(trips$lag5 <= 7.6, "2",
-                                      ifelse(trips$lag5 > 7.6, "3", NA))))
                                       
 trips$lag5 <- as.numeric(as.character(trips$lag5))
+trips$lag5[is.na(trips$lag5)] <- 0
+
 trips$lag.rain.bins <- ifelse(trips$lag5 == 0, "0",
                         ifelse(trips$lag5 <= 2.5, "1",
                                ifelse(trips$lag5 <= 7.6, "2",
@@ -18,15 +16,20 @@ trips$lag.bins3 <- as.numeric(ifelse(trips$lag.rain.bins == "3", 1, 0))
 blocks <- felm(duration.mean ~ blocks:lag.bins1 + blocks:lag.bins2 + blocks:lag.bins3 
                                + rain.bins1 + rain.bins2 + rain.bins3 
                                | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+trips$fitted.blocks <- fitted(blocks)
                                
 floods <- felm(fduration.mean ~ floods:lag.bins1 + floods:lag.bins2 + floods:lag.bins3 
                                 + rain.bins1 + rain.bins2 + rain.bins3 
                                 | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
+trips$fitted.floods <- fitted(floods)
+
 spillovers <- felm(mean ~ spillovers:lag.bins1 + spillovers:lag.bins2 + spillovers:lag.bins3 
                           + rain.bins1 + rain.bins2 + rain.bins3 
                           | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
-                          
+
+trips$fitted.spill <- fitted(spillovers)
 
 
 stargazer(blocks, floods, spillovers,
