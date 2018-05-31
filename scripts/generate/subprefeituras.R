@@ -9,6 +9,9 @@
 #   |                                                                                         |
 #   ----------------------------------------------------------------------------------------- #
 
+# Edited on 05/31/2018 to make sure all survey observations have associated subprefeituras
+# (not just the ones which encounter floods)
+
 # Set WD
 
 setwd("/home/bdeep/share/projects/Congestion/")
@@ -27,14 +30,8 @@ pkgTest <- function(x)
 # Load required packages 
 
 packages <- c("sp", 
-              "maptools", 
-              "rgeos", 
               "rgdal", 
-              "lubridate",
-              "dplyr",
-              "stringr",
-              "ggplot2",
-              "ggmap")
+              "dplyr")
 
 lapply(packages, pkgTest)
 
@@ -43,23 +40,13 @@ lapply(packages, pkgTest)
 
 # 2007 Mobility Survey
 
-survey07.path <- "data/OD2007_v3.csv"
+survey07.path <- "stores/floods/OD2007_v3.csv"
 
 # 2012 Mobility Survey
-survey12.path <- "data/mobilidade_2012_google_info.csv"
+survey12.path <- "stores/floods/mobilidade_2012_google_info.csv"
 
 # Subprefeituras shapefile
-sub.path <- "data/LAYER_SUBPREFEITURAS_2013"
-
-# 2007 Floods
-floods07.path <- "data/2007-floods.rds"
-
-# 2012 Floods
-floods12.path <- "data/2012-floods.rds"
-
-# Output
-
-out.path <- "data/survey-sub.rds"
+sub.path <- "stores/floods/LAYER_SUBPREFEITURAS_2013"
 
 # ----------------------------------------------------------------------------------------------
 
@@ -69,9 +56,6 @@ survey07 <- read.csv(survey07.path, header = TRUE)
 survey12 <- read.csv(survey12.path, header = TRUE)
 
 sub <- readOGR(sub.path, "DEINFO_SUBPREFEITURAS_2013")
-
-floods12 <- readRDS(floods12.path)
-floods07 <- readRDS(floods07.path)
 
 # Assign CRS: SAD69 (cf. "deinfometadadossubprefeituras2013.csv")
 proj4string(sub) <- CRS("+proj=poly +lat_0=0 +lon_0=-54 +x_0=5000000 +y_0=10000000 +ellps=aust_SA +units=m +no_defs ")
@@ -91,11 +75,6 @@ survey12 <- survey12[,c("ID_ORDEM",
                         "CO_DOM_X",
                         "CO_DOM_Y")]
 
-
-# Remove NAs
-
-survey07 <- survey07[which(!is.na(survey07$CO_DOM_X)),]
-survey12 <- survey12[which(!is.na(survey12$CO_DOM_X)),]
 
 # Generate coordinate vector for individual's place of residence
 
@@ -119,29 +98,12 @@ dom12.spdf <- SpatialPointsDataFrame(coords12, survey12,
                                      proj4string = CRS("+proj=poly +lat_0=0 +lon_0=-54 +x_0=5000000 +y_0=10000000 +ellps=aust_SA +units=m +no_defs "))
 dom12.spdf <- spTransform(dom12.spdf, CRS("+proj=longlat +ellps=WGS84"))
 
-
-# Save as Shapefile
-
-writeOGR(dom07.spdf, 
-         sub.path, 
-         layer = "dom_2007", 
-         driver = "ESRI Shapefile", 
-         overwrite_layer = TRUE )
-
-
-writeOGR(dom12.spdf, 
-         sub.path, 
-         layer = "dom_2012", 
-         driver = "ESRI Shapefile", 
-         overwrite_layer = TRUE )
-
 # Spatial Intersect
 
 intersect07 <- over(dom07.spdf, sub)
 survey07 <- cbind(survey07, intersect07)
 
 survey07 <- survey07[,c("ID_ORDEM",
-                    "DATA",
                     "NOME")]
 
 
@@ -149,7 +111,6 @@ intersect12 <- over(dom12.spdf, sub)
 survey12 <- cbind(survey12, intersect12)
 
 survey12 <- survey12[,c("ID_ORDEM",
-                        "DATA",
                         "NOME")]
 
 # ----------------------------------------------------------------------------------------------
@@ -224,62 +185,10 @@ survey12$SUB <- ifelse(survey12$NOME == "ARICANDUVA", "AF",
                                                                                                                                                                                                                                        ifelse(survey12$NOME == "VILA PRUDENTE", "VP", NA))))))))))))))))))))))))))))))))
 
 
-# Format date variable 
 
-survey12$DATA <- format(as.POSIXct(strptime(survey12$DATA,"%m/%d/%Y",tz="")), format = "%Y-%m-%d")
-survey12$DATA <- as.Date(survey12$DATA)
-
-# Create variable for the day before 
-
-survey07$DATA1 <- as.Date(ymd(survey07$DATA) - days(1))
-survey12$DATA1 <- as.Date(ymd(survey12$DATA) - days(1))
-
-# Create dataset with number of floods per neighborhood per day --------------------------------
-
-floods07 <- group_by(floods07, DATA, SITUACAO, SUB)
-floods12 <- group_by(floods12, DATA, SITUACAO, SUB)
-
-floods07_1 <- summarise(floods07, count = n())
-floods12_1 <- summarise(floods12, count = n())
-
-blocks_per_day_2007 <- floods07_1[which(floods07_1$SITUACAO == "intransitavel"),]
-names(blocks_per_day_2007)[which(names(blocks_per_day_2007) == "count")] <- "blocks_count"
-blocks_per_day_2007$SITUACAO <- NULL
-
-blocks_per_day_2012 <- floods07_1[which(floods12_1$SITUACAO == "intransitavel"),]
-names(blocks_per_day_2012)[which(names(blocks_per_day_2012) == "count")] <- "blocks_count"
-blocks_per_day_2012$SITUACAO <- NULL
-
-
-floods_per_day_2007 <- floods07_1[which(floods07_1$SITUACAO == "transitavel"),]
-names(floods_per_day_2007)[which(names(floods_per_day_2007) == "count")] <- "floods_count"
-floods_per_day_2007$SITUACAO <- NULL
-
-floods_per_day_2012 <- floods12_1[which(floods12_1$SITUACAO == "transitavel"),]
-names(floods_per_day_2012)[which(names(floods_per_day_2012) == "count")] <- "floods_count"
-floods_per_day_2012$SITUACAO <- NULL
-
-
-# Merge
-
-survey07 <- merge(survey07, blocks_per_day_2007,
-                by.x = c("DATA1", "SUB"), by.y = c("DATA", "SUB"),
-                all.x = TRUE)
-
-survey07 <- merge(survey07, floods_per_day_2007,
-                by.x = c("DATA1", "SUB"), by.y = c("DATA", "SUB"),
-                all.x = TRUE)
-
-survey12 <- merge(survey12, blocks_per_day_2012,
-                  by.x = c("DATA1", "SUB"), by.y = c("DATA", "SUB"),
-                  all.x = TRUE)
-
-survey12 <- merge(survey12, floods_per_day_2012,
-                  by.x = c("DATA1", "SUB"), by.y = c("DATA", "SUB"),
-                  all.x = TRUE)
 
 
 # Save output ----------------------------------------------------------------------------------
 
-saveRDS(survey07, "data/survey-sub-2007.rds")
-saveRDS(survey12, "data/survey-sub-2012.rds")
+saveRDS(survey07, "intermediate/floods/survey-sub-2007.rds")
+saveRDS(survey12, "intermediate/floods/survey-sub-2012.rds")
