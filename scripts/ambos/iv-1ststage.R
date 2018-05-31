@@ -50,15 +50,21 @@ trips <- trips[trips$ambos > 0,]
 iv.1 <- felm(duration.mean ~ blocks:rain.bins1 + blocks:rain.bins2 + blocks:rain.bins3 + rain
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
+trips$fitted.blocks <- fitted(iv.1)
+
 # floods
 
 iv.2 <- felm(fduration.mean ~ floods:rain.bins1 + floods:rain.bins2 + floods:rain.bins3 + rain
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
+trips$fitted.floods <- fitted(iv.2)
+
 # spillovers 
 
 iv.3 <- felm(mean ~ spillovers:rain.bins1 + spillovers:rain.bins2 + spillovers:rain.bins3 + rain
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+trips$fitted.spill <- fitted(iv.3)
 
 # output ----------------------------------------------------------------------------------------
 
