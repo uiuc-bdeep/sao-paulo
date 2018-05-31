@@ -28,21 +28,26 @@ coef2.path <- "intermediate/floods/iv2-coef.rds"
 # generating predicted values for blocks, floods and spillovers
 
 # read dataset of IV 1st stage coefficients
-# average values of a flood duration for different y bins
+# average values of a flood duration for different rain bins
+
 coef <- readRDS(coef.path)
 
 # assign names to each coefficient
-blocks.low <- coef$Estimate[[1]]
-blocks.med <- coef$Estimate[[2]]
-blocks.high <- coef$Estimate[[3]]
 
-floods.low <- coef$Estimate[[4]]
-floods.med <- coef$Estimate[[5]]
-floods.high <- coef$Estimate[[6]]
+blocks.rain <- coef$Estimate[[1]]
+blocks.low <- coef$Estimate[[2]]
+blocks.med <- coef$Estimate[[3]]
+blocks.high <- coef$Estimate[[4]]
 
-spill.low <- coef$Estimate[[7]]
-spill.med <- coef$Estimate[[8]]
-spill.high <- coef$Estimate[[9]]
+floods.rain <- coef$Estimate[[5]]
+floods.low <- coef$Estimate[[6]]
+floods.med <- coef$Estimate[[7]]
+floods.high <- coef$Estimate[[8]]
+
+spill.rain <- coef$Estimate[[9]]
+spill.low <- coef$Estimate[[10]]
+spill.med <- coef$Estimate[[11]]
+spill.high <- coef$Estimate[[12]]
 
 # read dataset of IV 2nd stage coefficients
 coef2 <- readRDS(coef2.path)
@@ -85,7 +90,6 @@ floods$floods <- ifelse(floods$SITUACAO == "transitavel", 1, 0)
 floods <- group_by(floods, DATA)
 
 floods1 <- summarize(floods, blocks = max(blocks), floods = max(floods))
-
 
 # generate number of days in a year with blocks, floods and spillovers 
 
@@ -136,180 +140,31 @@ HH <- readRDS(HH.path)
 
 # Value of Time = 0.5 hourly income per working age adult
 
+# GDP of the city of Sao Paulo (Brookings Institute, 2013) 
+
+SP.GDP <- 473000000000
+
 # Blocks
+
 HH$CS1 <- 0.5 * HH$hourly.income.pwaa * (Blocks / 60)
 
 CSD <- sum(HH$CS1 * HH$FE_PESS, na.rm = TRUE)
 CSD
+(CSD / SP.GDP) * 100
 
 # Floods
 
-HH$CS2 <- 0.5 * HH$hourly.income.pwaa * (Floods / 60)
+HH$CS2 <- 0.5 * HH$hourly.income.pwaa * (Floods / 60) 
 
 CSD <- sum(HH$CS2 * HH$FE_PESS, na.rm = TRUE)
 CSD
+(CSD / SP.GDP) * 100
 
 # Spillovers
 
-HH$CS3 <- 0.5 * HH$hourly.income.pwaa * (Spill / 60)
+HH$CS3 <- 0.5 * HH$hourly.income.pwaa * (Spill / 60) 
 
 CSD <- sum(HH$CS3 * HH$FE_PESS, na.rm = TRUE)
 CSD
+(CSD / SP.GDP) * 100
 
-# ----------------------------------------------------------------------------------------------
-
-# Value of Time = 0.5 mean wage
-
-# No Low Rain, No Medium Rain, No Heavy Rain
-
-HH$CS0 <- 0.5 * (1800 / (21 * 8)) * (HH$Y0 / 60)
-HH$CS0[which(is.na(HH$CS0))] <- "0"
-HH$CS0 <- as.numeric(HH$CS0)
-
-summary(HH$CS0)
-
-# Low Rain
-
-HH$CS1 <- 0.5 * (1800 / (21 * 8)) * (HH$Y1 / 60)
-HH$CS1 <- as.numeric(ifelse(is.na(HH$CS1), HH$CS0, HH$CS1))
-summary(HH$CS1)
-
-# Estimate change in consumer surplus
-HH$CSD1 <- HH$CS0 - HH$CS1 
-summary(HH$CSD1)
-
-CSD <- sum(HH$CSD1 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-
-# Medium Rain
-
-HH$CS2 <- 0.5 * (1800 / (21 * 8)) * (HH$Y2 / 60)
-HH$CS2 <- as.numeric(ifelse(is.na(HH$CS2), HH$CS0, HH$CS2))
-summary(HH$CS2)
-
-# Estimate change in consumer surplus
-HH$CSD2 <- HH$CS0 - HH$CS2 
-summary(HH$CSD2)
-
-CSD <- sum(HH$CSD2 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-# Heavy Rain
-
-HH$CS3 <- 0.5 * (1800 / (21 * 8)) * (HH$Y3 / 60)
-HH$CS3 <- as.numeric(ifelse(is.na(HH$CS3), HH$CS0, HH$CS3))
-summary(HH$CS3)
-
-# Estimate change in consumer surplus
-HH$CSD3 <- HH$CS0 - HH$CS3 
-summary(HH$CSD3)
-
-CSD <- sum(HH$CSD3 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-# ----------------------------------------------------------------------------------------------
-
-# Value of Time = 0.5 reported wage
-
-# No Low Rain, No Medium Rain, No Heavy Rain
-
-HH$CS0 <- 0.5 * (HH$VL_REN_I / (21 * 8)) * (HH$Y0 / 60)
-HH$CS0[which(is.na(HH$CS0))] <- "0"
-HH$CS0 <- as.numeric(HH$CS0)
-
-summary(HH$CS0)
-
-# Low Rain
-
-HH$CS1 <- 0.5 * (HH$VL_REN_I / (21 * 8)) * (HH$Y1 / 60)
-HH$CS1 <- as.numeric(ifelse(is.na(HH$CS1), HH$CS0, HH$CS1))
-summary(HH$CS1)
-
-# Estimate change in consumer surplus
-HH$CSD1 <- HH$CS0 - HH$CS1 
-summary(HH$CSD1)
-
-CSD <- sum(HH$CSD1 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-
-# Medium Rain
-
-HH$CS2 <- 0.5 * (HH$VL_REN_I / (21 * 8)) * (HH$Y2 / 60)
-HH$CS2 <- as.numeric(ifelse(is.na(HH$CS2), HH$CS0, HH$CS2))
-summary(HH$CS2)
-
-# Estimate change in consumer surplus
-HH$CSD2 <- HH$CS0 - HH$CS2 
-summary(HH$CSD2)
-
-CSD <- sum(HH$CSD2 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-# Heavy Rain
-
-HH$CS3 <- 0.5 * (HH$VL_REN_I / (21 * 8))* (HH$Y3 / 60)
-HH$CS3 <- as.numeric(ifelse(is.na(HH$CS3), HH$CS0, HH$CS3))
-summary(HH$CS3)
-
-# Estimate change in consumer surplus
-HH$CSD3 <- HH$CS0 - HH$CS3 
-summary(HH$CSD3)
-
-CSD <- sum(HH$CSD3 * HH$FE_PESS, na.rm = TRUE)
-CSD
-
-# ----------------------------------------------------------------------------------------------
-
-HH.wage <- HH[which(HH$VL_REN_I > 0),]
-
-# Value of Time = 0.5 hourly income per working age adult
-
-# No Low Rain, No Medium Rain, No Heavy Rain
-
-HH.wage$CS0 <- 0.5 * HH.wage$hourly.income.pwaa * (HH.wage$Y0 / 60)
-HH.wage$CS0[which(is.na(HH.wage$CS0))] <- "0"
-HH.wage$CS0 <- as.numeric(HH.wage$CS0)
-
-summary(HH.wage$CS0)
-
-# Low Rain
-
-HH.wage$CS1 <- 0.5 * HH.wage$hourly.income.pwaa * (HH.wage$Y1 / 60)
-HH.wage$CS1 <- as.numeric(ifelse(is.na(HH.wage$CS1), HH.wage$CS0, HH.wage$CS1))
-summary(HH.wage$CS1)
-
-# Estimate change in consumer surplus
-HH.wage$CSD1 <- HH.wage$CS0 - HH.wage$CS1 
-summary(HH.wage$CSD1)
-
-CSD <- sum(HH.wage$CSD1 * HH.wage$FE_PESS, na.rm = TRUE)
-CSD
-
-
-# Medium Rain
-
-HH.wage$CS2 <- 0.5 * HH.wage$hourly.income.pwaa * (HH.wage$Y2 / 60)
-HH.wage$CS2 <- as.numeric(ifelse(is.na(HH.wage$CS2), HH.wage$CS0, HH.wage$CS2))
-summary(HH.wage$CS2)
-
-# Estimate change in consumer surplus
-HH.wage$CSD2 <- HH.wage$CS0 - HH.wage$CS2 
-summary(HH.wage$CSD2)
-
-CSD <- sum(HH.wage$CSD2 * HH.wage$FE_PESS, na.rm = TRUE)
-CSD
-
-# Heavy Rain
-
-HH.wage$CS3 <- 0.5 * HH.wage$hourly.income.pwaa * (HH.wage$Y3 / 60)
-HH.wage$CS3 <- as.numeric(ifelse(is.na(HH.wage$CS3), HH.wage$CS0, HH.wage$CS3))
-summary(HH.wage$CS3)
-
-# Estimate change in consumer surplus
-HH.wage$CSD3 <- HH.wage$CS0 - HH.wage$CS3 
-summary(HH.wage$CSD3)
-
-CSD <- sum(HH.wage$CSD3 * HH.wage$FE_PESS, na.rm = TRUE)
-CSD
