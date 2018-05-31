@@ -1,6 +1,6 @@
 # -------------------------------------------------------------------------------------- #
 #                                                                                        #
-# Regress trip travel time on predicted flood durations with spillovers                  #
+# Regress trip travel time on predicted flood durations                                  #
 #                                                                                        #
 #                                                                                        #
 # Created by: Amanda Ang                                                                 #
@@ -9,7 +9,6 @@
 # -------------------------------------------------------------------------------------- #
 
 
-# Edited on 05/29/2018
 
 # clear workspace
 
@@ -87,15 +86,16 @@ saveRDS(coef, coef.path)
 
 # LaTeX table
 stargazer(iv.1, iv.2, iv.3, iv.4, 
-          align = TRUE,
-          type = "latex",
-          title = "IV Second Stage",
-          covariate.labels = c("Blocks",
-                               "Floods"),
-          add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
-                           c("Month FE", "N", "Y", "Y", "Y"),
-                           c("Day of Week FE", "N", "N", "Y", "Y"),
-                           c("Hour FE", "N", "N", "N", "Y")),
-          notes = "Standard errors are clustered at the trip level.",
+           align = TRUE,
+           type = "latex",
+           df = FALSE,
+           title = "IV Second Stage",
+           covariate.labels = c("pr.Blocks",
+                                "pr.Floods"),
+           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
+                            c("Month FE", "N", "Y", "Y", "Y"),
+                            c("Day of Week FE", "N", "N", "Y", "Y"),
+                            c("Hour FE", "N", "N", "N", "Y")),
+           notes = "Standard errors are clustered at the trip level.",
           dep.var.labels = "Trip Duration (minutes)",
-          out = paste0(out, "iv-secondstage.tex"))
+          out = paste0(out.path, "iv-secondstage.tex"))
