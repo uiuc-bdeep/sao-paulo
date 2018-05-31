@@ -9,25 +9,27 @@
 #   |                                                                                         |
 #     ----------------------------------------------------------------------------------------
 
+# edited on 05/31/2018 to create table for districts with most floods and most travel
+
 # clear workspace
 
 rm(list=ls())
 
 # set working directory
 
-setwd("//141.142.208.117/share/projects/Congestion/")
+setwd("/home/bdeep/share/projects/Congestion/")
 source("intermediate/floods/environment.R")
 
 # load packages 
 
-packages <- c("dplyr", "tidyr","xtable")
+packages <- c("dplyr", "tidyr", "xtable")
 lapply(packages, pkgTest)
 
 # inputs
 
 floods.path <- "intermediate/floods/floods.rds"
 HH.path <- "intermediate/floods/floods-intersect.rds"
-trips.path <- "intermediate/floods/date-merge.rds"
+trips.path <- "intermediate/floods/floods-model.rds"
   
 # output
 
@@ -40,12 +42,8 @@ out.path <- "views/floods/"
 floods <- readRDS(floods.path)
 names(floods)
 
-# subset to flood events that take place during our data collection time period
-
-floods <- floods[which(floods$DATA >= as.Date("2016-07-04")),]
-
 # whole dataset
-var <- as.data.frame(floods$delay)
+var <- as.data.frame(floods$DURACAO)
 sum <- as.data.frame(capture.output(summary(var)))
 
 # format data frame
@@ -79,7 +77,7 @@ out <- as.data.frame(sum)
 # blocks ---------------------------------------------------------------------------------------
 
 blocks <- subset(floods, SITUACAO == "intransitavel")
-var <- as.data.frame(blocks$delay)
+var <- as.data.frame(blocks$DURACAO)
 
 # save output as data frame
 blocks.sum <- as.data.frame(capture.output(summary(var)))
@@ -112,7 +110,7 @@ blocks.sum$Share <- nrow(blocks) / nrow(floods)
 # floods ---------------------------------------------------------------------------------------
 
 floods <- subset(floods, SITUACAO == "transitavel")
-var <- as.data.frame(floods$delay)
+var <- as.data.frame(floods$DURACAO)
 
 # save output as data frame
 floods.sum <- as.data.frame(capture.output(summary(var)))
