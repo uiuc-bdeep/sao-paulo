@@ -157,5 +157,25 @@ ggsave(paste0(out.path, "trips - map.png"), height = 4, width = 6, dpi = 300)
 
 # load districts shapefile
 
+sub <- readOGR(sub.dsn, sub.path)
+
+# Assign CRS: SAD69 (cf. "deinfometadadossubprefeituras2013.csv")
+proj4string(sub) <- CRS("+proj=poly +lat_0=0 +lon_0=-54 +x_0=5000000 +y_0=10000000 +ellps=aust_SA +units=m +no_defs ")
+
+# Transform SAD69 to WGS84
+sub <- spTransform(sub, CRS("+proj=longlat +ellps=WGS84"))
+
+# subset to SE suprefeitura (subprefecture with the most floods)
+sub <- sub[sub$NOME == "SE",]
+
+sub@data$id <- rownames(sub@data)
+sub.points <- fortify(sub, region="id")
+sub.df <- join(sub.points, sub@data, by="id")
 
 
+SE <- c(long = -46.6342, lat = -23.5511)
+SE.map <- get_map(location = SE,  maptype = "satellite", source = "google", zoom = 10)
+SE_Test <- ggmap(SE.map)
+
+SE_Test + 
+  geom_path(aes(long, lat),color="white", data = sub.df)
