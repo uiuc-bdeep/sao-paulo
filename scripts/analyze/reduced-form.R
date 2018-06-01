@@ -7,7 +7,6 @@
 #             Big Data Environmental Economics and Policy Group                                         #
 # ----------------------------------------------------------------------------------------------------- #
 
-# Edited on 05/29/2018
 
 # clear workspace 
 
@@ -38,29 +37,30 @@ trips <- readRDS(trips.path)
 
 # trip FE --------------------------------------------------------------------------------------
 
-m1 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM | 0 | ID_ORDEM, data = trips)
+m1 <- felm(tr.time ~ duration.mean + fduration.mean | ID_ORDEM | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month FE ------------------------------------------------------------------------------
 
-m2 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
+m2 <- felm(tr.time ~ duration.mean + fduration.mean| ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week FE ----------------------------------------------------------------
 
-m3 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
+m3 <- felm(tr.time ~ duration.mean + fduration.mean | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week + time of day FE --------------------------------------------------
 
-m4 <- felm(ln_tr.time ~ blocks + floods | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+m4 <- felm(tr.time ~ duration.mean + fduration.mean | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 
 # reduced form model with peak hour interactions -----------------------------------------------
 
-m5 <- felm(ln_tr.time ~ blocks:early.peak + floods:early.peak + 
-                        blocks:late.peak + floods:late.peak + 
-                        blocks:not.peak + floods:not.peak | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+m5 <- felm(tr.time ~ duration.mean:early.peak + fduration.mean:early.peak + 
+                     duration.mean:late.peak + fduration.mean:late.peak + 
+                     duration.mean:not.peak + fduration.mean:not.peak 
+                     | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # output ----------------------------------------------------------------------------------------
 
@@ -68,7 +68,9 @@ stargazer(m1, m2, m3, m4,
           align = TRUE,
           type = "latex",
           df = FALSE,
-          dep.var.label = "ln(Trip Duration)",
+          dep.var.label = "Trip Duration",
+          covariate.labels = c("Blocks Duration",
+                               "Floods Duration"),
           out = paste0(out.path, "reduced-form.tex"),
           notes = "Standard errors clustered at trip level.",
           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
