@@ -34,9 +34,6 @@ intersect.path <- "intermediate/floods/floods-intersect.rds"
 routes.dsn <- "stores/floods/"
 routes.path <- "routes"
 
-sub.dsn <- "stores/floods/LAYER_SUBPREFEITURAS_2013"
-sub.path <- "DEINFO_SUBPREFEITURAS_2013"
-
 # output
 
 out.path <- "views/floods/"
@@ -46,6 +43,7 @@ out.path <- "views/floods/"
 floods <- readRDS(floods.path)
 
 # ----------------------------------------------------------------------------------------------
+
 names(floods)
 floods$SITUACAO <- as.factor(floods$SITUACAO)
 summary(floods$SITUACAO)
@@ -154,28 +152,25 @@ ggsave(paste0(out.path, "trips - map.png"), height = 4, width = 6, dpi = 300)
 
 # plot district with the largest number of flood events
 
+# subset to floods in district SE
 
-# load districts shapefile
+floods <- floods[floods$SUB == "SE",]
 
-sub <- readOGR(sub.dsn, sub.path)
-
-# Assign CRS: SAD69 (cf. "deinfometadadossubprefeituras2013.csv")
-proj4string(sub) <- CRS("+proj=poly +lat_0=0 +lon_0=-54 +x_0=5000000 +y_0=10000000 +ellps=aust_SA +units=m +no_defs ")
-
-# Transform SAD69 to WGS84
-sub <- spTransform(sub, CRS("+proj=longlat +ellps=WGS84"))
-
-# subset to SE suprefeitura (subprefecture with the most floods)
-sub <- sub[sub$NOME == "SE",]
-
-sub@data$id <- rownames(sub@data)
-sub.points <- fortify(sub, region="id")
-sub.df <- join(sub.points, sub@data, by="id")
-
+floods$long <- as.numeric(as.character(floods$long))
+floods$lat <- as.numeric(as.character(floods$lat))
 
 SE <- c(long = -46.6342, lat = -23.5511)
-SE.map <- get_map(location = SE,  maptype = "satellite", source = "google", zoom = 10)
+SE.map <- get_map(location = SE,  maptype = "satellite", source = "google", zoom = 13)
 SE_Test <- ggmap(SE.map)
 
-SE_Test + 
-  geom_path(aes(long, lat),color="white", data = sub.df)
+SE_Test +
+  geom_point(data = floods, aes(long, lat, color = SITUACAO), size = 1.1, alpha = 0.7) +
+  scale_color_discrete(breaks = c("intransitavel", "transitavel"), 
+                       labels = c("Blocks", "Floods")) +
+  theme_bw() +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_blank(),
+        legend.postion = c(0.9, 0.1),
+        legend.background = element_blank())
