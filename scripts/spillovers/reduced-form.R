@@ -86,7 +86,8 @@ stargazer(m1, m2, m3, m4,
 
 m5 <- felm(tr.time ~ duration.mean:early.peak + fduration.mean:early.peak + mean:early.peak +
                      duration.mean:late.peak + fduration.mean:late.peak + mean:late.peak +
-                     duration.mean:not.peak + fduration.mean:not.peak + mean:not.peak 
+                     duration.mean:not.peak + fduration.mean:not.peak + mean:not.peak +
+                     rain.bins1 + rain.bins2 + rain.bins3
                      | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
 
 # output ---------------------------------------------------------------------------------------
