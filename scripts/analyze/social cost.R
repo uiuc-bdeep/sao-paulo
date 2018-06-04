@@ -28,28 +28,18 @@ coef2.path <- "intermediate/floods/iv2-coef.rds"
 # generating predicted values for blocks, floods and spillovers
 
 # read dataset of IV 1st stage coefficients
-# average values of a flood duration for different rain bins
+# average values of a flood duration given accumulated rain 
 
 coef <- readRDS(coef.path)
 
 # assign names to each coefficient
 
-blocks.rain <- coef$Estimate[[1]]
-blocks.low <- coef$Estimate[[2]]
-blocks.med <- coef$Estimate[[3]]
-blocks.high <- coef$Estimate[[4]]
-
-floods.rain <- coef$Estimate[[5]]
-floods.low <- coef$Estimate[[6]]
-floods.med <- coef$Estimate[[7]]
-floods.high <- coef$Estimate[[8]]
-
-spill.rain <- coef$Estimate[[9]]
-spill.low <- coef$Estimate[[10]]
-spill.med <- coef$Estimate[[11]]
-spill.high <- coef$Estimate[[12]]
+blocks.rain <- coef$Estimate[[4]]
+floods.rain <- coef$Estimate[[8]]
 
 # read dataset of IV 2nd stage coefficients
+# effect of predicted flood duration on travel time (per minute)
+
 coef2 <- readRDS(coef2.path)
 
 # assign names to each coefficient
@@ -57,8 +47,6 @@ coef2 <- coef2[which(coef2$model == "iv.4"),] # taking model that includes the m
 
 pr.blocks <- coef2$Estimate[[1]]
 pr.floods <- coef2$Estimate[[2]]
-pr.spill <- coef2$Estimate[[3]]
-
 
 # ----------------------------------------------------------------------------------------------
 
@@ -95,48 +83,29 @@ floods1 <- summarize(floods, blocks = max(blocks), floods = max(floods))
 
 block.days <- sum(floods1$blocks, na.rm = TRUE)
 flood.days <- sum(floods1$floods, na.rm = TRUE)
-spill.days <- block.days + flood.days 
-
 
 # ----------------------------------------------------------------------------------------------
 
-# Generate added travel time using regression coefficients
+# Generate added travel time per year using regression coefficients
 
 # Blocks
 
-LR.Blocks <- blocks.low * pr.blocks * block.days
-MR.Blocks <- blocks.med * pr.blocks * block.days
-HR.Blocks <- blocks.high * pr.blocks * block.days
-
-Blocks <- LR.Blocks + MR.Blocks + HR.Blocks
+Blocks <- blocks.rain * pr.blocks * block.days
 
 # Floods
 
-LR.Floods <- floods.low * pr.floods * flood.days
-MR.Floods <- floods.med * pr.floods * flood.days
-HR.Floods <- floods.high * pr.floods * flood.days
-
-Floods <- LR.Floods + MR.Floods + HR.Floods
-
-# Spillovers
-
-LR.Spill <- spill.low * pr.spill * spill.days
-MR.Spill <- spill.med * pr.spill * spill.days
-HR.Spill <- spill.high * pr.spill * spill.days
-
-Spill <- LR.Spill + MR.Spill + HR.Spill
+Floods <- floods.rain * pr.blocks * block.days
 
 # Output
 
 Blocks
 Floods
-Spill
 
-# read files
 
-HH <- readRDS(HH.path)
 
 # ----------------------------------------------------------------------------------------------
+
+HH <- readRDS(HH.path)
 
 # Value of Time = 0.5 hourly income per working age adult
 
@@ -157,14 +126,6 @@ CSD
 HH$CS2 <- 0.5 * HH$hourly.income.pwaa * (Floods / 60) 
 
 CSD <- sum(HH$CS2 * HH$FE_PESS, na.rm = TRUE)
-CSD
-(CSD / SP.GDP) * 100
-
-# Spillovers
-
-HH$CS3 <- 0.5 * HH$hourly.income.pwaa * (Spill / 60) 
-
-CSD <- sum(HH$CS3 * HH$FE_PESS, na.rm = TRUE)
 CSD
 (CSD / SP.GDP) * 100
 
