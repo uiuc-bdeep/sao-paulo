@@ -37,27 +37,33 @@ trips <- readRDS(trips.path)
 
 # trip FE --------------------------------------------------------------------------------------
 
-m1 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM | 0 | ID_ORDEM, data = trips)
+m1 <- felm(tr.time ~ duration.mean + fduration.mean + mean 
+                    + rain.bins1 + rain.bins2 + rain.bins3| ID_ORDEM | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month FE ------------------------------------------------------------------------------
 
-m2 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
+m2 <- felm(tr.time ~ duration.mean + fduration.mean + mean
+                     + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month + day of week FE ----------------------------------------------------------------
 
-m3 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
+m3 <- felm(tr.time ~ duration.mean + fduration.mean + mean
+                     + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
+
 
 # trip + month + day of week + time of day FE --------------------------------------------------
 
-m4 <- felm(ln_tr.time ~ blocks + floods + spillovers | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
+m4 <- felm(tr.time ~ duration.mean + fduration.mean + mean
+                     + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # output ---------------------------------------------------------------------------------------
 
 stargazer(m1, m2, m3, m4,
-          align = TRUE,
           type = "latex",
           df = FALSE,
-          dep.var.label = "ln(Trip Duration)",
+          dep.var.labels = c("Trip Duration"),
           out = paste0(out.path, "reduced-form.tex"),
           notes = "Standard errors clustered at trip level.",
           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
@@ -74,11 +80,20 @@ stargazer(m1, m2, m3, m4,
 
 m5 <- felm(ln_tr.time ~ blocks:early.peak + floods:early.peak + spillovers:early.peak +
                         blocks:late.peak + floods:late.peak + spillovers:late.peak +
-                        blocks:not.peak + floods:not.peak + spillovers:not.peak | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, 
-                        data = trips)
+                        blocks:not.peak + floods:not.peak + spillovers:not.peak 
+                        | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
 
 # output ---------------------------------------------------------------------------------------
-stargazer(m5, align = TRUE)
+stargazer(m5, 
+         type = "latex",
+         df = FALSE,
+         dep.var.labels = c("Trip Duration"),
+         notes = "Standard errors clustered at the trip level.",
+         add.lines = list(c("Trip FE", "Y"),
+                          c("Month FE", "Y"),
+                          c("Day of Week FE", "Y"),
+                          c("Hour FE", "Y"))
+
 
 
 
