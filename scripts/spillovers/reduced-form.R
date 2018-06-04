@@ -64,12 +64,18 @@ stargazer(m1, m2, m3, m4,
           type = "latex",
           df = FALSE,
           dep.var.labels = c("Trip Duration"),
-          out = paste0(out.path, "reduced-form.tex"),
+          covariate.labels = c("Blocks Duration", 
+                               "Floods Duration",
+                               "Spillovers Duration",
+                               "Light Rain",
+                               "Moderate Rain",
+                               "Heavy Rain"),
           notes = "Standard errors clustered at trip level.",
           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
                            c("Month FE", "N", "Y", "Y", "Y"),
                            c("Day of Week FE", "N", "N", "Y", "Y"),
-                           c("Hour FE", "N", "N", "N", "N")))
+                           c("Hour FE", "N", "N", "N", "Y")),
+          out = paste0(out.path, "reduced-form.tex"))
 
 # peak hour ------------------------------------------------------------------------------------
 
@@ -78,10 +84,10 @@ stargazer(m1, m2, m3, m4,
 
 # reduced form model with peak hour interactions -----------------------------------------------
 
-m5 <- felm(ln_tr.time ~ blocks:early.peak + floods:early.peak + spillovers:early.peak +
-                        blocks:late.peak + floods:late.peak + spillovers:late.peak +
-                        blocks:not.peak + floods:not.peak + spillovers:not.peak 
-                        | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
+m5 <- felm(tr.time ~ duration.mean:early.peak + fduration.mean:early.peak + mean:early.peak +
+                     duration.mean:late.peak + fduration.mean:late.peak + mean:late.peak +
+                     duration.mean:not.peak + fduration.mean:not.peak + mean:not.peak 
+                     | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
 
 # output ---------------------------------------------------------------------------------------
 stargazer(m5, 
@@ -92,7 +98,7 @@ stargazer(m5,
          add.lines = list(c("Trip FE", "Y"),
                           c("Month FE", "Y"),
                           c("Day of Week FE", "Y"),
-                          c("Hour FE", "Y"))
+                          c("Hour FE", "Y")))
 
 
 
