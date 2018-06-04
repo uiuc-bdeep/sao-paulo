@@ -7,8 +7,6 @@
 #                                                                                          #
 # ---------------------------------------------------------------------------------------- #
 
-# Edited on 05/29/2018
-
 # clear workspace
 
 rm(list = ls())
@@ -70,6 +68,7 @@ iv.1 <- felm(duration.mean ~ blocks:acc.rain + rain.bins1 + rain.bins2 + rain.bi
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 trips$fitted.blocks <- fitted(iv.1)
+trips$res.blocks <- trips$duration.mean - residuals(iv.1)
 
 iv1.coef <- as.data.frame(summary(iv.1)$coefficients)
 iv1.coef$model <- "iv.1"
@@ -80,6 +79,7 @@ iv.2 <- felm(fduration.mean ~ floods:acc.rain + rain.bins1 + rain.bins2 + rain.b
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 trips$fitted.floods <- fitted(iv.2)
+trips$res.floods <- trips$fduration.mean - residuals(iv.2)
 
 iv2.coef <- as.data.frame(summary(iv.2)$coefficients)
 iv2.coef$model <- "iv.2"
