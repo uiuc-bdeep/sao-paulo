@@ -30,7 +30,8 @@ pkgTest <- function(x)
 # load required packages
 
 packages <- c("dplyr",
-              "ggplot2")
+              "ggplot2",
+              "ggpubr")
 
 lapply(packages, pkgTest)
 
@@ -45,19 +46,6 @@ out.path <- "views/floods/"
 # read file
 
 trips <- readRDS(trips.path)
-
-# generate the set of trip IDs which encounter blocks / floods 
-
-trips <- group_by (trips, ID_ORDEM)
-trips1 <- summarise(trips, blocks = sum(blocks))
-
-block.trips <- trips1[trips1$blocks > 0,]
-
-trips1 <- summarise(trips, floods = sum(floods))
-
-flood.trips <- trips1[trips1$floods > 0,] 
-
-rm(trips1)
 
 # generate the average travel time by time of day according to blocks / floods status
 
@@ -90,11 +78,9 @@ names(flood.trips.3)[names(flood.trips.3) == "tr.time"] <- "no.flood"
 
 # merge with trip IDs
 
-block.trips <- merge(block.trips, block.trips.2, by = "ID_ORDEM", all.x = TRUE)
-block.trips <- merge(block.trips, block.trips.3, by = "ID_ORDEM", all.x = TRUE)
+block.trips <- merge(block.trips.2, block.trips.3, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
 
-flood.trips <- merge(flood.trips, flood.trips.2, by = "ID_ORDEM", all.x = TRUE)
-flood.trips <- merge(flood.trips, flood.trips.3, by = "ID_ORDEM", all.x = TRUE)
+flood.trips <- merge(flood.trips.2, flood.trips.3, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
 
 # calculate difference in travel times
 
@@ -103,21 +89,24 @@ flood.trips$diff <- flood.trips$flood.time - flood.trips$no.flood
 
 # plot 
 
-ggplot(block.trips) +
-  geom_histogram(aes(diff), binwidth = 1) +
-  xlab("Difference in Travel Time /n (Minutes)") +
-  ylab("Number of Trips") + 
-  ggtitle("Difference in Travel Time",
-          subtitle = "Blocked Trips, Grouped by Departure Hour") + 
-  theme_bw() 
+ggplot() +
+      geom_histogram(aes(diff), 
+                     binwidth = 1, data = block.trips) +
+      ylab("Number of Trips") +
+      xlab("Difference in Travel Time \n (Minutes)") +
+      ggtitle("Blocked Trips") + 
+      theme_bw() 
 
-ggplot(flood.trips) + 
-  geom_histogram(aes(diff), binwidth = 1) + 
-  xlab("Difference in Travel Time /n (Minutes)") +
-  ylab("Number of Trips") +
-  ggtitle("Difference in Travel Time", 
-          subtitle = "Flooded Trips, Grouped by Departure Hour") +
-  theme_bw()
+ggsave(paste0(out.path, "diff-time-blocks.png"),
+       width = 8, height = 5, dpi = 300)
 
+ggplot() +
+      geom_histogram(aes(diff), 
+                     binwidth = 1, data = flood.trips) +
+      ylab("Number of Trips") +
+      xlab("Difference in Travel Time \n (Minutes)") +
+      ggtitle("Flooded Trips") + 
+      theme_bw() 
 
-
+ggsave(paste0(out.path, "diff-time-floods.png"),
+       width = 8, height = 5, dpi = 300)
