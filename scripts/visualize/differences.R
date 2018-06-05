@@ -110,3 +110,33 @@ ggplot() +
 
 ggsave(paste0(out.path, "diff-time-floods.png"),
        width = 8, height = 5, dpi = 300)
+
+# --------------------------------------------------------------------------------------------------
+
+merged.trips <- readRDS("intermediate/floods/date-merge.rds") 
+merged.trips <- merged.trips[,c("TID",
+                                "FID",
+                                "flood.time",
+                                "flood.fim")]
+merged.trips <- unique(merged.trips)
+
+# take only the first flood event each trip encounters
+
+merged.trips <- merged.trips %>% 
+                add_count(TID)
+
+merged.trips <- merged.trips[merged.trips$n == 1,]
+
+merged.trips$n <- NULL
+
+merged.trips <- as.data.table(merged.trips)
+trips <- as.data.table(trips)
+
+trips <- merge(trips, merged.trips, by = "TID", all.x = TRUE)
+
+saveRDS(trips, trips.path)
+
+
+
+
+
