@@ -406,10 +406,10 @@ rain1.sum <- as.data.frame(capture.output(summary(var)))
 rain1.sum <- as.data.frame(rain1.sum[-1,])
 
 # format names
-names(rain1.sum)[which(names(rain1.sum) == "rain1.sum[-1, ]")] <- "Low Rain"
+names(rain1.sum)[which(names(rain1.sum) == "rain1.sum[-1, ]")] <- "Light Rain"
 
 # separate strings from numerical values
-rain1.sum <- separate(rain1.sum, `Low Rain`, into = c("stat", "Low Rain"), sep = ":", extra = "merge")
+rain1.sum <- separate(rain1.sum, `Light Rain`, into = c("stat", "Light Rain"), sep = ":", extra = "merge")
 
 # transpose
 rownames(rain1.sum) <- rain1.sum$stat
@@ -448,10 +448,10 @@ rain2.sum <- as.data.frame(capture.output(summary(var)))
 rain2.sum <- as.data.frame(rain2.sum[-1,])
 
 # format names
-names(rain2.sum)[which(names(rain2.sum) == "rain2.sum[-1, ]")] <- "Medium Rain"
+names(rain2.sum)[which(names(rain2.sum) == "rain2.sum[-1, ]")] <- "Moderate Rain"
 
 # separate strings from numerical values
-rain2.sum <- separate(rain2.sum, `Medium Rain`, into = c("stat", "Medium Rain"), sep = ":", extra = "merge")
+rain2.sum <- separate(rain2.sum, `Moderate Rain`, into = c("stat", "Moderate Rain"), sep = ":", extra = "merge")
 
 # transpose
 rownames(rain2.sum) <- rain2.sum$stat
@@ -645,6 +645,8 @@ rm(spillovers.sum)
 
 
 # No Blocks or floods --------------------------------------------------------------------------
+
+trips$no.flood <- ifelse(trips$blocks == 0 & trips$floods == 0, 1, 0)
 
 NoFloods <- subset(trips, no.flood == 1)
 var <- as.data.frame(NoFloods$tr.time)
