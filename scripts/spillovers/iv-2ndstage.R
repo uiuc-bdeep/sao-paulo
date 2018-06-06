@@ -32,7 +32,7 @@ trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
-coef.path <- "intermediate/floods/iv2-coef.rds"
+coef.path <- "intermediate/floods/iv2-coef(spillovers).rds"
 out.path <- "views/floods/spillovers/"
 
 #   read files
