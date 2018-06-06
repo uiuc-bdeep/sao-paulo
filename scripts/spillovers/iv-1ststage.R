@@ -62,5 +62,11 @@ saveRDS(iv.coef, coef.path)
 stargazer(iv,  
           type = "latex",
           df = FALSE,
+          title = "IV First Stage with Spillovers",
+          dep.var.labels = c("Spillover Duration"),
+          add.lines = list(c("Trip FE", "N"),
+                           c("Month FE", "Y"),
+                           c("Day of Week FE", "Y"),
+                           c("Hour FE", "Y")),
           notes = "Standard errors are clustered at the trip level.",
           out = paste0(out.path, "iv-1ststage.tex"))
