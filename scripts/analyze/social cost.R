@@ -19,7 +19,7 @@ lapply(packages, pkgTest)
 
 # input
 HH.path <- "analysis/HH.rds"
-floods.path <- "intermediate/floods/floods.rds"
+floods.path <- "stores/floods/Alag 1617 (1).csv"
 
 coef.path <- "intermediate/floods/iv1-coef.rds"
 coef2.path <- "intermediate/floods/iv2-coef.rds"
@@ -58,35 +58,35 @@ pr.floods <- coef2$Estimate[[2]]
 
 # read files 
 
-floods <- readRDS(floods.path)
+floods <- read.csv(floods.path, header = TRUE)
+floods <- as.data.frame(floods)
 
 # generate variable for days of the week
 
+floods$DATA <- format(as.POSIXct(strptime(floods$DATA,"%d-%b-%y",tz="")) ,format = "%Y-%m-%d")
+floods$DATA <- as.Date(floods$DATA)
 floods$wd <- as.factor(as.character(weekdays(floods$DATA)))
 
 # exclude Saturdays and Sundays
 
 floods <- floods[which(floods$wd != "Saturday" & floods$wd != "Sunday"),]
 
-# exclude 2017
+# exclude 2017 to get estimates for the year 2016
 
 floods <- floods[which(floods$DATA < as.Date("2017-01-01")),]
 
-# generate indicators for blocks and floods
-
-floods$blocks <- ifelse(floods$SITUACAO == "intransitavel", 1, 0)
-floods$floods <- ifelse(floods$SITUACAO == "transitavel", 1, 0)
-
 # aggregate from flood level to day level
 
-floods <- group_by(floods, DATA)
-
-floods1 <- summarize(floods, blocks = max(blocks), floods = max(floods))
+floods <- group_by(floods, DATA, SITUACAO)
+floods1 <- summarise(floods, count = n())
 
 # generate number of days in a year with blocks, floods and spillovers 
 
-block.days <- sum(floods1$blocks, na.rm = TRUE)
-flood.days <- sum(floods1$floods, na.rm = TRUE)
+block.days <- floods1[floods1$SITUACAO == "intransitavel",]
+flood.days <- floods1[floods1$SITUACAO == "transitavel",]
+
+block.days <- 47
+flood.days <- 87
 
 # ----------------------------------------------------------------------------------------------
 
@@ -104,8 +104,6 @@ Floods <- floods.rain * pr.blocks * block.days
 
 Blocks
 Floods
-
-
 
 # ----------------------------------------------------------------------------------------------
 
