@@ -193,7 +193,143 @@ stargazer(iv,
 
 # ----------------------------------------------------------------------------------------------
 
+# Social Cost (Main Results)
 
+HH.path <- "analysis/HH.rds"
+HH <- readRDS(HH.path)
 
+# IV First Stage Coefficient: Average Flood Duration 
 
+floods.rain <- firststage$Estimate[[4]]
+
+# IV Second Stage Coefficient: Effect of Floods on Travel Time
+
+secondstage <- secondstage[secondstage$model == "iv.4",]
+pr.floods <- secondstage$Estimate[[1]]
+
+# Number of days in year 2016 where there are flood events
+
+flood.days <- 135
+
+# Average Travel Time Added Per Trip Per Year
+
+Floods <- floods.rain * pr.floods * flood.days
+
+# Estimate Social Cost
+
+HH$CS <- 0.5 * HH$hourly.income.pwaa * (Floods / 60) 
+
+CSD <- sum(HH$CS * HH$FE_PESS, na.rm = TRUE)
+CSD
+(CSD / SP.GDP) * 100
+
+# ----------------------------------------------------------------------------------------------
+
+# Social Cost with Peak Hours
+
+# IV First Stage Coefficient: Average Flood Duration 
+
+floods.rain <- firststage$Estimate[[4]]
+
+# IV Second Stage Coefficient: Effect of Floods on Travel Time
+
+early <- peak.coef$Estimate[[4]] 
+late <- peak.coef$Estimate[[5]] 
+off <- peak.coef$Estimate[[6]]
+
+# Number of days in year 2016 where there are flood events
+
+flood.days <- 135
+
+# Average Travel Time Added Per Trip Per Year
+
+floods.early <- early * floods.rain * flood.days
+floods.late <- late * floods.rain * flood.days
+floods.off <- off * floods.rain * flood.days
+
+# Morning Peak
+HH$MP <- as.numeric(ifelse(HH$dep.hour >= 7 & 
+                             HH$dep.hour < 11, 1, 0))
+summary(HH$MP)
+
+# Evening Peak
+HH$EP <- as.numeric(ifelse(HH$hour >= 17 &
+                             HH$hour < 21, 1, 0))
+summary(HH$EP)
+
+# Off-Peak
+HH$OP <- as.numeric(ifelse(HH$MP == 0 & HH$EP == 0, 1, 0))
+summary(HH$OP)
+
+# Estimate Social Cost
+
+HH$CS <- as.numeric(ifelse(HH$MP == 1, 0.5 * HH$hourly.income.pwaa * (floods.early / 60),
+                            ifelse(HH$EP == 1, 0.5 * HH$hourly.income.pwaa * (floods.late / 60),
+                                   ifelse(HH$OP == 1, 0.5 * HH$hourly.income.pwaa * (floods.off / 60), NA))))
+
+CSD <- sum(HH$CS * HH$FE_PESS, na.rm = TRUE)
+CSD
+
+# ----------------------------------------------------------------------------------------------
+
+# Social Cost with Traffic Direction 
+
+# IV First Stage Coefficient: Average Flood Duration 
+
+floods.rain <- firststage$Estimate[[4]]
+
+# IV Second Stage Coefficient: Effect of Floods on Travel Time
+
+with <- dir.coef$Estimate[[1]]
+against <- dir.coef$Estimate[[2]]
+normal <- dir.coef$Estimate[[3]]
+
+# Number of days in year 2016 where there are flood events
+
+flood.days <- 135
+
+# Average Travel Time Added Per Trip Per Year
+
+floods.with <- with * floods.rain * flood.days
+floods.against <- against * floods.rain * flood.days
+floods.normal <- normal * floods.rain * flood.days
+
+# create indicator for trips that end in the downtown area -------------------------------------
+# downtown defined as 2012 Survey Traffic Zones 1, 14, 15, 16 and 23
+
+HH$traffic_d <- as.numeric(ifelse(HH$ZONA_D == 1  |
+                                    HH$ZONA_D == 14 |
+                                    HH$ZONA_D == 15 |
+                                    HH$ZONA_D == 16 |
+                                    HH$ZONA_D == 23 , 1, 0))
+summary(HH$traffic_d)
+
+# create indicator for trips that begin in downtown area --------------------------------------
+
+HH$traffic_o <- as.numeric(ifelse(HH$ZONA_O == 1  |
+                                    HH$ZONA_O == 14 |
+                                    HH$ZONA_O == 15 |
+                                    HH$ZONA_O == 16 |
+                                    HH$ZONA_O == 23 , 1, 0))
+summary(HH$traffic_o)
+
+# create indicators for traffic direction -------------------------------------------------------
+
+HH$with.traffic <- as.numeric(ifelse((HH$traffic_d == 1 & HH$MP == 1) |
+                                     (HH$traffic_o == 1 & HH$EP == 1), 1, 0))
+summary(HH$with.traffic)
+
+HH$against.traffic <- as.numeric(ifelse(((HH$traffic_o == 1 & HH$MP == 1) |
+                                        (HH$traffic_d == 1 & HH$EP == 1)) 
+                                        & HH$OP == 0, 1, 0))
+summary(HH$against.traffic)
+
+# Estimate Social Cost
+
+HH$CS <- as.numeric(ifelse(HH$with.traffic == 1, 0.5 * HH$hourly.income.pwaa * (floods.with / 60),
+                            ifelse(HH$against.traffic == 1, 0.5 * HH$hourly.income.pwaa * (floods.against / 60),
+                                   ifelse(HH$OP == 1, 0.5 * HH$hourly.income.pwaa * (floods.normal / 60), NA))))
+
+CSD <- sum(HH$CS * HH$FE_PESS, na.rm = TRUE)
+CSD
 
