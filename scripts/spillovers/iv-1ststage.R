@@ -41,51 +41,25 @@ trips <- readRDS(trips.path)
 
 # IV  - first stage ----------------------------------------------------------------------------
 
-# blocks
-# duration.mean = average block duration per trip (trips may encounter more than one block)
-
-iv.1 <- felm(duration.mean ~ blocks:acc.rain + rain.bins1 + rain.bins2 + rain.bins3
-                             | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
-
-# generate predicted values for blocks 
-trips$fitted.blocks <- fitted(iv.1)
-
-# save coefficients
-iv1.coef <- as.data.frame(summary(iv.1)$coefficients)
-iv1.coef$model <- "iv.1"
-
-# floods
-# fduration.mean = average flood duration per trip (trips may encounter more than one flood) 
-
-iv.2 <- felm(fduration.mean ~ floods:acc.rain + rain.bins1 + rain.bins2 + rain.bins3 
-                              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
-
-# generate predicted values for floods
-trips$fitted.floods <- fitted(iv.2)
-
-# save coefficients 
-iv2.coef <- as.data.frame(summary(iv.2)$coefficients)
-iv2.coef$model <- "iv.2"
-
 # spillovers
 # mean = average duration of blocks and floods per trip 
 
-iv.3 <- felm(mean ~ spillovers:acc.rain + rain.bins1 + rain.bins2 + rain.bins3 
+iv <- felm(mean ~ spillovers:acc.rain + rain.bins1 + rain.bins2 + rain.bins3 
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # generate predicted values for spillovers 
-trips$fitted.spill <- fitted(iv.3)
+trips$fitted.spill <- fitted(iv)
 
 # save coefficients
-iv3.coef <- as.data.frame(summary(iv.3)$coefficients)
-iv3.coef$model <- "iv.3"
+
+iv.coef <- as.data.frame(summary(iv)$coefficients)
+
 
 # output ----------------------------------------------------------------------------------------
 
-coef <- rbind(iv1.coef, iv2.coef, iv3.coef)
-saveRDS(coef, coef.path)
+saveRDS(iv.coef, coef.path)
 
-stargazer(iv.1, iv.2, iv.3,  
+stargazer(iv,  
           type = "latex",
           df = FALSE,
           notes = "Standard errors are clustered at the trip level.",
