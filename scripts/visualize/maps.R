@@ -159,18 +159,26 @@ floods <- floods[floods$SUB == "SE",]
 floods$long <- as.numeric(as.character(floods$long))
 floods$lat <- as.numeric(as.character(floods$lat))
 
-SE <- c(long = -46.6342, lat = -23.5511)
-SE.map <- get_map(location = SE,  maptype = "satellite", source = "google", zoom = 13)
+SE <- c(long = -46.64, lat = -23.5511)
+SE.map <- get_map(location = SE,  maptype = "satellite", source = "google", zoom = 14)
 SE_Test <- ggmap(SE.map)
 
 SE_Test +
-  geom_point(data = floods, aes(long, lat, color = SITUACAO), size = 1.1, alpha = 0.7) +
+  geom_jitter(data = floods, aes(long, lat, color = SITUACAO), size = 3, alpha = 0.7,
+             width = 0.001, height = 0.001) +
   scale_color_discrete(breaks = c("intransitavel", "transitavel"), 
                        labels = c("Blocks", "Floods")) +
+  ggtitle("Blocks and Floods for the district SE",
+          subtitle = "N = 87") + 
   theme_bw() +
+  guides(col = guide_legend(nrow = 1)) +
   theme(axis.ticks = element_blank(),
         axis.text = element_blank(),
         axis.title = element_blank(),
         legend.title = element_blank(),
-        legend.postion = c(0.9, 0.1),
-        legend.background = element_blank())
+        legend.position = c(0.85, 0.08),
+        legend.background = element_blank(),
+        legend.text = element_text(color = "white",
+                                   face = "bold"))
+
+ggsave(paste0(out.path, "se_map.png"), height = 5, width = 8, dpi = 300)
