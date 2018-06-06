@@ -30,7 +30,7 @@ trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
-coef2.path <- "intermediate/floods/iv2-coef (peak).rds"
+coef2.path <- "intermediate/floods/iv2-coef-peak (spillovers).rds"
 out.path <- "views/floods/spillovers/"
 
 # read files -----------------------------------------------------------------------------------
@@ -56,7 +56,13 @@ saveRDS(iv.coef, coef2.path)
 # generate LaTeX table 
 
 stargazer(iv, 
-          align = TRUE,
           type = "latex",
+          title = "IV Second Stage with Spillovers and Peak Hour Indicators", 
+          dep.var.labels = c("Trip Duration"),
+          add.lines = list(c("Trip FE", "Y"),
+                           c("Month FE", "Y"),
+                           c("Day of Week", "Y"),
+                           c("Hour FE", "Y")),
+          notes = "Standard errors are clustered at the trip level.",
           df = FALSE,
           out = paste0(out.path, "iv (peak).tex"))
