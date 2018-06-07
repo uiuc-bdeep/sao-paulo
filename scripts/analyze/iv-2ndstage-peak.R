@@ -10,10 +10,6 @@
 #   |                                                                                         |
 #     ----------------------------------------------------------------------------------------
 
-# Notes: 
-
-# Archived on 05/24/2018 to remove spillovers and cluster standard errors at trip level
-
 rm(list=ls())
 
 setwd("/home/bdeep/share/projects/Congestion/")
@@ -30,7 +26,7 @@ trips.path <- "intermediate/floods/floods-model.rds"
 
 #   output
 
-coef2.path <- "intermediate/floods/iv2-coef (peak).rds"
+coef.path <- "intermediate/floods/iv2-coef (peak).rds"
 out.path <- "views/floods/"
 
 # read files -----------------------------------------------------------------------------------
@@ -41,9 +37,9 @@ trips <- readRDS(trips.path)
 
 # trip + month + day of week + time of day FE
 
-iv <- felm(tr.time ~ fitted.blocks:early.peak + fitted.floods:early.peak +
-                     fitted.blocks:late.peak + fitted.floods:late.peak +
-                     fitted.blocks:off.peak + fitted.floods:off.peak + 
+iv <- felm(tr.time ~ blocks:fitted.blocks:early.peak + floods:fitted.floods:early.peak +
+                     blocks:fitted.blocks:late.peak + floods:fitted.floods:late.peak +
+                     blocks:fitted.blocks:off.peak + floods:fitted.floods:off.peak + 
                      rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 iv.coef <- as.data.frame(summary(iv)$coefficients)
@@ -52,14 +48,15 @@ iv.coef <- as.data.frame(summary(iv)$coefficients)
 
 # save coefficients
 
-saveRDS(iv.coef, coef2.path)
+saveRDS(iv.coef, coef.path)
 
 # generate LaTeX table 
 
 stargazer(iv,
           type = "latex",
-          dep.var.labels = c("Trip Duration"),
           df = FALSE,
+          title = "IV Second Stage with Peak Hour Indicators",
+          dep.var.labels = c("Trip Duration"),
           add.lines = list(c("Trip FE", "Y"),
                            c("Month FE", "Y"),
                            c("Day of Week FE", "Y"),
