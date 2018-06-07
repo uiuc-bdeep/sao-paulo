@@ -98,11 +98,15 @@ saveRDS(trips, trips.path)
 
 # second stage ---------------------------------------------------------------------------------
 
-iv <- felm(tr.time ~ fitted.blocks:with.traffic + fitted.floods:with.traffic +
-                       fitted.blocks:against.traffic + fitted.floods:against.traffic +
-                       fitted.blocks:normal.traffic + fitted.floods:normal.traffic 
-                       | ID_ORDEM + month + wd + hour.f, data = trips)
+iv <- felm(tr.time ~ blocks:fitted.blocks:with.traffic + floods:fitted.floods:with.traffic +
+                     blocks:fitted.blocks:against.traffic + floods:fitted.floods:against.traffic +
+                     blocks:fitted.blocks:normal.traffic + floods:fitted.floods:normal.traffic 
+                     | ID_ORDEM + month + wd + hour.f, data = trips)
+
+# save coefficients
+
 iv.coef <- as.data.frame(summary(iv)$coefficients)
+saveRDS(iv.coef, coef.path)
 
 # LaTeX output
 stargazer(iv,
@@ -117,6 +121,3 @@ stargazer(iv,
           title = "IV Second Stage with Traffic Directions",
           out = paste0(out.path, "iv(directions).tex"))
 
-# save coefficients
-
-saveRDS(iv.coef, coef.path)
