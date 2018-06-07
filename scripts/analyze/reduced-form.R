@@ -37,33 +37,33 @@ trips <- readRDS(trips.path)
 
 # trip FE --------------------------------------------------------------------------------------
 
-m1 <- felm(tr.time ~ duration.mean + fduration.mean 
+m1 <- felm(tr.time ~ blocks:duration.mean + floods:fduration.mean 
                     + rain.bins1 + rain.bins2 + rain.bins3| ID_ORDEM | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month FE ------------------------------------------------------------------------------
 
-m2 <- felm(tr.time ~ duration.mean + fduration.mean
+m2 <- felm(tr.time ~ blocks:duration.mean + floods:fduration.mean
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week FE ----------------------------------------------------------------
 
-m3 <- felm(tr.time ~ duration.mean + fduration.mean 
+m3 <- felm(tr.time ~ blocks:duration.mean + floods:fduration.mean 
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week + time of day FE --------------------------------------------------
 
-m4 <- felm(tr.time ~ duration.mean + fduration.mean 
+m4 <- felm(tr.time ~ blocks:duration.mean + floods:fduration.mean 
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 
 # reduced form model with peak hour interactions -----------------------------------------------
 
-m5 <- felm(tr.time ~ duration.mean:early.peak + fduration.mean:early.peak + 
-                     duration.mean:late.peak + fduration.mean:late.peak + 
-                     duration.mean:not.peak + fduration.mean:not.peak 
+m5 <- felm(tr.time ~ blocks:duration.mean:early.peak + floods:fduration.mean:early.peak + 
+                     blocks:duration.mean:late.peak + floods:fduration.mean:late.peak + 
+                     blocks:duration.mean:not.peak + floods:fduration.mean:not.peak 
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # output ----------------------------------------------------------------------------------------
