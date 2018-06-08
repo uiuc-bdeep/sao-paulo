@@ -27,7 +27,7 @@ lapply(packages, pkgTest)
 
 # inputs
 
-HH.path <- "analyze/HH.rds"
+HH.path <- "intermediate/floods/2012-floods-trips.rds"
 trips.path <- "intermediate/floods/floods-model.rds"
   
 # output
@@ -39,14 +39,18 @@ out.path <- "views/floods/"
 HH <- readRDS(HH.path)
 names(HH)
 
+# Household.Income
+HH$income_pc <- (HH$RENDA_FA/HH$NO_MORAF)/2.04
+
 # keeping only relevant variables
 
 HH <- HH[,c("ID_ORDEM",
             "SITUACAO", 
-            "DURACAO")]
+            "tr.time",
+            "income_pc")]
 
 # whole sample 
-var <- as.data.frame(HH$DURACAO)
+var <- as.data.frame(HH$tr.time)
 sum <- as.data.frame(capture.output(summary(var)))
 
 # format data frame
@@ -74,7 +78,7 @@ out <- sum
 # blocks ---------------------------------------------------------------------------------------
 
 blocks <- subset(HH, SITUACAO == "intransitavel")
-var <- as.data.frame(blocks$DURACAO)
+var <- as.data.frame(blocks$tr.time)
 
 # save output as data frame
 blocks.sum <- as.data.frame(capture.output(summary(var)))
@@ -102,7 +106,7 @@ out <- rbind(out, blocks.sum)
 # floods ---------------------------------------------------------------------------------------
 
 floods <- subset(HH, SITUACAO == "transitavel")
-var <- as.data.frame(floods$DURACAO)
+var <- as.data.frame(floods$tr.time)
 
 # save output as data frame
 floods.sum <- as.data.frame(capture.output(summary(var)))
@@ -123,29 +127,14 @@ floods.sum$stat <- NULL
 
 floods.sum <- as.data.frame(t(floods.sum))
 
-# add variable for number of observations
-floods.sum$Count <- as.numeric(nrow(floods))
-
-# add variable for share of total
-floods.sum$Share <- nrow(floods) / 15483
-
 # append to output
 
 out <- rbind(out, floods.sum)
 
-rm(blocks,
-   blocks.sum, 
-   floods,
-   floods.sum, 
-   var, 
-   HH)
-
-gc()
-
 # no blocks or floods --------------------------------------------------------------------------
 
 nofloods <- subset(HH, is.na(SITUACAO))
-var <- as.data.frame(nofloods$DURACAO)
+var <- as.data.frame(nofloods$tr.time)
 
 # save output as data frame
 nofloods.sum <- as.data.frame(capture.output(summary(var)))
@@ -166,12 +155,6 @@ nofloods.sum$stat <- NULL
 
 nofloods.sum <- as.data.frame(t(nofloods.sum))
 
-# add variable for number of observations
-nofloods.sum$Count <- as.numeric(nrow(nofloods))
-
-# add variable for share of total
-nofloods.sum$Share <- nrow(nofloods) / 15483
-
 # append to output
 
 out <- rbind(out, nofloods.sum)
@@ -179,6 +162,130 @@ out <- rbind(out, nofloods.sum)
 # income bins ----------------------------------------------------------------------------------
 
 
+# generate income bins
+
+HH$inc1 <- ifelse(HH$income_pc <= quantile(HH$income_pc, 0.25), 1, 0)
+HH$inc2 <- ifelse(HH$income_pc > quantile(HH$income_pc, 0.25) & 
+                  HH$income_pc <= quantile(HH$income_pc, 0.5), 1, 0)
+HH$inc3 <- ifelse(HH$income_pc > quantile(HH$income_pc, 0.5) &
+                  HH$income_pc <= quantile(HH$income_pc, 0.75), 1, 0)
+HH$inc4 <- ifelse(HH$income_pc > quantile(HH$income_pc, 0.75), 1, 0)
+
+# 1st Quartile: Income Per Capita <= 248.89
+
+inc1 <- HH[HH$inc1 == 1,]
+var <- as.data.frame(inc1$tr.time)
+
+# save output as data frame
+inc1.sum <- as.data.frame(capture.output(summary(var)))
+
+# format data frame
+# remove first row
+inc1.sum <- as.data.frame(inc1.sum[-1,])
+
+# format names
+names(inc1.sum)[which(names(inc1.sum) == "inc1.sum[-1, ]")] <- "1st Quartile"
+
+# separate strings from numerical values
+inc1.sum <- separate(inc1.sum, `1st Quartile`, into = c("stat", "1st Quartile"), sep = ":", extra = "merge")
+
+# transpose
+rownames(inc1.sum) <- inc1.sum$stat
+inc1.sum$stat <- NULL
+
+inc1.sum <- as.data.frame(t(inc1.sum))
+
+# append to output
+
+out <- rbind(out, inc1.sum)
+
+
+# 2nd Quartile: Income Per Capita > 248.89 & Income Per Capita <= 412.82
+
+inc2 <- HH[HH$inc2 == 1,]
+
+var <- as.data.frame(inc2$tr.time)
+
+# save output as data frame
+inc2.sum <- as.data.frame(capture.output(summary(var)))
+
+# format data frame
+# remove first row
+inc2.sum <- as.data.frame(inc2.sum[-1,])
+
+# format names
+names(inc2.sum)[which(names(inc2.sum) == "inc2.sum[-1, ]")] <- "2nd Quartile"
+
+# separate strings from numerical values
+inc2.sum <- separate(inc2.sum, `2nd Quartile`, into = c("stat", "2nd Quartile"), sep = ":", extra = "merge")
+
+# transpose
+rownames(inc2.sum) <- inc2.sum$stat
+inc2.sum$stat <- NULL
+
+inc2.sum <- as.data.frame(t(inc2.sum))
+
+# append to output
+
+out <- rbind(out, inc2.sum)
+
+
+# 3rd Quartile: Income Per Capita > 412.82 & Income Per Capita <= 735.29
+
+inc3 <- HH[HH$inc3 == 1,]
+
+var <- as.data.frame(inc3$tr.time)
+
+# save output as data frame
+inc3.sum <- as.data.frame(capture.output(summary(var)))
+
+# format data frame
+# remove first row
+inc3.sum <- as.data.frame(inc3.sum[-1,])
+
+# format names
+names(inc3.sum)[which(names(inc3.sum) == "inc3.sum[-1, ]")] <- "3rd Quartile"
+
+# separate strings from numerical values
+inc3.sum <- separate(inc3.sum, `3rd Quartile`, into = c("stat", "3rd Quartile"), sep = ":", extra = "merge")
+
+# transpose
+rownames(inc3.sum) <- inc3.sum$stat
+inc3.sum$stat <- NULL
+
+inc3.sum <- as.data.frame(t(inc3.sum))
+
+# append to output
+
+out <- rbind(out, inc3.sum)
+
+# 4th Quartile: Income Per Capita > 735.29
+
+inc4 <- HH[HH$inc4 == 1,]
+var <- as.data.frame(inc4$tr.time)
+
+# save output as data frame
+inc4.sum <- as.data.frame(capture.output(summary(var)))
+
+# format data frame
+# remove first row
+inc4.sum <- as.data.frame(inc4.sum[-1,])
+
+# format names
+names(inc4.sum)[which(names(inc4.sum) == "inc4.sum[-1, ]")] <- "4th Quartile"
+
+# separate strings from numerical values
+inc4.sum <- separate(inc4.sum, `4th Quartile`, into = c("stat", "4th Quartile"), sep = ":", extra = "merge")
+
+# transpose
+rownames(inc4.sum) <- inc4.sum$stat
+inc4.sum$stat <- NULL
+
+inc4.sum <- as.data.frame(t(inc4.sum))
+
+# append to output
+
+out <- rbind(out, inc4.sum)
 
 # crawled trips --------------------------------------------------------------------------------
 
@@ -220,174 +327,6 @@ sum$Share <- nrow(trips) / nrow(trips)
 
 # append to output
 out <- rbind(out, sum)
-
-# No Rain --------------------------------------------------------------------------------------
-
-Rain0 <- subset(trips, rain.bins == 0)
-var <- as.data.frame(Rain0$tr.time)
-count <- nrow(Rain0) 
-share <- nrow(Rain0) / nrow(trips)
-
-# remove dataset to save computing power
-rm(Rain0)
-gc()
-
-# save output
-rain0.sum <- as.data.frame(capture.output(summary(var)))
-
-# format data frame
-# remove first row
-rain0.sum <- as.data.frame(rain0.sum[-1,])
-
-# format names
-names(rain0.sum)[which(names(rain0.sum) == "rain0.sum[-1, ]")] <- "No Rain"
-
-# separate strings from numerical values
-rain0.sum <- separate(rain0.sum, `No Rain`, into = c("stat", "No Rain"), sep = ":", extra = "merge")
-
-# transpose
-rownames(rain0.sum) <- rain0.sum$stat
-rain0.sum$stat <- NULL
-
-rain0.sum <- as.data.frame(t(rain0.sum))
-
-# add variable for number of observations
-rain0.sum$Count <- count
-
-# add variable for share of total
-rain0.sum$Share <- share
-
-# append to output
-
-out <- rbind(out, rain0.sum)
-
-rm(rain0.sum)
-
-# Low Rain -------------------------------------------------------------------------------------
-
-Rain1 <- subset(trips, rain.bins == 1)
-var <- as.data.frame(Rain1$tr.time)
-count <- nrow(Rain1) 
-share <- nrow(Rain1) / nrow(trips)
-
-# remove dataset to save computing power
-rm(Rain1)
-gc()
-
-# save output
-rain1.sum <- as.data.frame(capture.output(summary(var)))
-
-# format data frame
-# remove first row
-rain1.sum <- as.data.frame(rain1.sum[-1,])
-
-# format names
-names(rain1.sum)[which(names(rain1.sum) == "rain1.sum[-1, ]")] <- "Light Rain"
-
-# separate strings from numerical values
-rain1.sum <- separate(rain1.sum, `Light Rain`, into = c("stat", "Light Rain"), sep = ":", extra = "merge")
-
-# transpose
-rownames(rain1.sum) <- rain1.sum$stat
-rain1.sum$stat <- NULL
-
-rain1.sum <- as.data.frame(t(rain1.sum))
-
-# add variable for number of observations
-rain1.sum$Count <- count
-
-# add variable for share of total
-rain1.sum$Share <- share
-
-# append to output
-
-out <- rbind(out, rain1.sum)
-
-rm(rain1.sum)
-
-# Medium Rain ----------------------------------------------------------------------------------
-
-Rain2 <- subset(trips, rain.bins == 2)
-var <- as.data.frame(Rain2$tr.time)
-count <- nrow(Rain2) 
-share <- nrow(Rain2) / nrow(trips)
-
-# remove dataset to save computing power
-rm(Rain2)
-gc()
-
-# save output
-rain2.sum <- as.data.frame(capture.output(summary(var)))
-
-# format data frame
-# remove first row
-rain2.sum <- as.data.frame(rain2.sum[-1,])
-
-# format names
-names(rain2.sum)[which(names(rain2.sum) == "rain2.sum[-1, ]")] <- "Moderate Rain"
-
-# separate strings from numerical values
-rain2.sum <- separate(rain2.sum, `Moderate Rain`, into = c("stat", "Moderate Rain"), sep = ":", extra = "merge")
-
-# transpose
-rownames(rain2.sum) <- rain2.sum$stat
-rain2.sum$stat <- NULL
-
-rain2.sum <- as.data.frame(t(rain2.sum))
-
-# add variable for number of observations
-rain2.sum$Count <- count
-
-# add variable for share of total
-rain2.sum$Share <- share
-
-# append to output
-
-out <- rbind(out, rain2.sum)
-
-rm(rain2.sum)
-
-# Heavy Rain -----------------------------------------------------------------------------------
-
-Rain3 <- subset(trips, rain.bins == 3)
-var <- as.data.frame(Rain3$tr.time)
-count <- nrow(Rain3) 
-share <- nrow(Rain3) / nrow(trips)
-
-# remove dataset to save computing power
-rm(Rain3)
-gc()
-
-# save output
-rain3.sum <- as.data.frame(capture.output(summary(var)))
-
-# format data frame
-# remove first row
-rain3.sum <- as.data.frame(rain3.sum[-1,])
-
-# format names
-names(rain3.sum)[which(names(rain3.sum) == "rain3.sum[-1, ]")] <- "Heavy Rain"
-
-# separate strings from numerical values
-rain3.sum <- separate(rain3.sum, `Heavy Rain`, into = c("stat", "Heavy Rain"), sep = ":", extra = "merge")
-
-# transpose
-rownames(rain3.sum) <- rain3.sum$stat
-rain3.sum$stat <- NULL
-
-rain3.sum <- as.data.frame(t(rain3.sum))
-
-# add variable for number of observations
-rain3.sum$Count <- count
-
-# add variable for share of total
-rain3.sum$Share <- share
-
-# append to output
-
-out <- rbind(out, rain3.sum)
-
-rm(rain3.sum)
 
 # Blocks ---------------------------------------------------------------------------------------
 
@@ -563,15 +502,20 @@ nofloods.sum$Share <- share
 
 out <- rbind(out, nofloods.sum)
 
-rm(nofloods.sum)
+
 
 
 # output ---------------------------------------------------------------------------------------
 
+# remove max and min
+
+out$`Max.` <- NULL
+out$`Min.` <- NULL
+
 saveRDS(out, "analysis/desc.rds")
 
 print(xtable(out, 
-             digits = c(2, 2, 2, 2, 2, 2, 2, 0, 2),
+             digits = c(2, 2, 2, 2),
              type = "latex",
              caption = "Descriptive Statistics",
              floating = TRUE), 
