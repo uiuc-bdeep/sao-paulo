@@ -100,7 +100,8 @@ saveRDS(trips, trips.path)
 
 iv <- felm(tr.time ~ blocks:fitted.blocks:with.traffic + floods:fitted.floods:with.traffic +
                      blocks:fitted.blocks:against.traffic + floods:fitted.floods:against.traffic +
-                     blocks:fitted.blocks:normal.traffic + floods:fitted.floods:normal.traffic 
+                     blocks:fitted.blocks:normal.traffic + floods:fitted.floods:normal.traffic +
+                     rain.bins1 + rain.bins2 + rain.bins3
                      | ID_ORDEM + month + wd + hour.f, data = trips)
 
 # save coefficients
