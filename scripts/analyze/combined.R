@@ -207,7 +207,7 @@ floods.rain <- firststage$Estimate[[4]]
 # IV Second Stage Coefficient: Effect of Floods on Travel Time
 
 secondstage <- secondstage[secondstage$model == "iv.4",]
-pr.floods <- secondstage$Estimate[[1]]
+pr.floods <- secondstage$Estimate[[4]]
 
 # Number of days in year 2016 where there are flood events
 
@@ -223,7 +223,6 @@ HH$CS <- 0.5 * HH$hourly.income.pwaa * (Floods / 60)
 
 CSD <- sum(HH$CS * HH$FE_PESS, na.rm = TRUE)
 CSD
-(CSD / SP.GDP) * 100
 
 # ----------------------------------------------------------------------------------------------
 
