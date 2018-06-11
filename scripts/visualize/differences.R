@@ -84,8 +84,8 @@ flood.trips <- merge(flood.trips.2, trips1, by = c("ID_ORDEM","hour.f"), all.x =
 
 # calculate difference in travel times
 
-block.trips$diff <- block.trips$block.time - block.trips$no.block
-flood.trips$diff <- flood.trips$flood.time - flood.trips$no.flood
+block.trips$diff <- block.trips$block.time - block.trips$tr.time
+flood.trips$diff <- flood.trips$flood.time - flood.trips$tr.time
 
 # plot 
 
@@ -94,8 +94,10 @@ ggplot() +
                      binwidth = 1, data = block.trips) +
       geom_vline(aes(xintercept = mean(block.trips$diff)), color = "red") + 
       ylab("Number of Trips") +
-      xlab("Difference in Travel Time \n (Minutes)") +
+      xlab("Observed Difference in Travel Time \n (Minutes)") +
       ggtitle("Blocked Trips") + 
+      coord_cartesian(xlim = c(-12,12)) +
+      annotate("text", x = 4, y = 900, label = "Mean = 0.74 minutes", size = 3) + 
       theme_bw() 
 
 ggsave(paste0(out.path, "diff-time-blocks.png"),
@@ -106,8 +108,10 @@ ggplot() +
                      binwidth = 1, data = flood.trips) +
       geom_vline(aes(xintercept = mean(flood.trips$diff)), color = "red") + 
       ylab("Number of Trips") +
-      xlab("Difference in Travel Time \n (Minutes)") +
+      xlab("Observed Difference in Travel Time \n (Minutes)") +
       ggtitle("Flooded Trips") + 
+      coord_cartesian(xlim = c(-20,15)) +
+      annotate("text", x = 6, y = 900, label = "Mean = 0.0009 minutes", size = 3) + 
       theme_bw() 
 
 ggsave(paste0(out.path, "diff-time-floods.png"),
@@ -142,15 +146,20 @@ block.trips$rem.time[block.trips$rem.time < 0] <- 0
 
 block.trips$tr.time1 <- block.trips$tr.time + block.trips$rem.time
 
+# collapse to the trip and hour level
+
+block.trips <- group_by(block.trips, ID_ORDEM, hour.f)
+block.trips1 <- summarise(block.trips, tr.time1 = mean(tr.time1))
+
 
 ggplot() +
       geom_histogram(aes(tr.time1), 
-                     binwidth = 1, data = block.trips) +
-      geom_vline(aes(xintercept = mean(block.trips$tr.time1)), color = "red") + 
+                     binwidth = 20, data = block.trips1) +
+      geom_vline(aes(xintercept = mean(block.trips1$tr.time1)), color = "red") + 
       ylab("Number of Trips") +
-      xlab("Difference in Travel Time \n (Minutes)") +
-      coord_cartesian(ylim = c(0, 150)) +
+      xlab("Maximum Difference in Travel Time \n (Minutes)") +
       ggtitle("Blocked Trips") + 
+      annotate("text", x = 420, y = 450, label = "Mean = 222 minutes", size = 3) + 
       theme_bw() 
 
 ggsave(paste0(out.path, "diff-time-blocks-rem.png"),
