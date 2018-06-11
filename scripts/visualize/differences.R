@@ -48,6 +48,12 @@ out.path <- "views/floods/"
 
 trips <- readRDS(trips.path)
 
+# generate the average travel time by time of day
+
+trips <- group_by(trips, ID_ORDEM, hour.f)
+
+trips1 <- summarise(trips, tr.time = mean(tr.time))
+
 # generate the average travel time by time of day according to blocks / floods status
 
 trips$blocks <- as.factor(trips$blocks)
@@ -69,19 +75,12 @@ names(block.trips.2)[names(block.trips.2) == "tr.time"] <- "block.time"
 flood.trips.2 <- flood.trips.1[flood.trips.1$floods == 1,]
 names(flood.trips.2)[names(flood.trips.2) == "tr.time"] <- "flood.time"
 
-# subset to trips which do not encounter blocks or floods 
-
-block.trips.3 <- block.trips.1[block.trips.1$blocks == 0,]
-names(block.trips.3)[names(block.trips.3) == "tr.time"] <- "no.block"
-
-flood.trips.3 <- flood.trips.1[flood.trips.1$floods == 0,]
-names(flood.trips.3)[names(flood.trips.3) == "tr.time"] <- "no.flood"
 
 # merge with trip IDs
 
-block.trips <- merge(block.trips.2, block.trips.3, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
+block.trips <- merge(block.trips.2, trips1, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
 
-flood.trips <- merge(flood.trips.2, flood.trips.3, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
+flood.trips <- merge(flood.trips.2, trips1, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
 
 # calculate difference in travel times
 
@@ -93,6 +92,7 @@ flood.trips$diff <- flood.trips$flood.time - flood.trips$no.flood
 ggplot() +
       geom_histogram(aes(diff), 
                      binwidth = 1, data = block.trips) +
+      geom_vline(aes(xintercept = mean(block.trips$diff)), color = "red") + 
       ylab("Number of Trips") +
       xlab("Difference in Travel Time \n (Minutes)") +
       ggtitle("Blocked Trips") + 
@@ -104,6 +104,7 @@ ggsave(paste0(out.path, "diff-time-blocks.png"),
 ggplot() +
       geom_histogram(aes(diff), 
                      binwidth = 1, data = flood.trips) +
+      geom_vline(aes(xintercept = mean(flood.trips$diff)), color = "red") + 
       ylab("Number of Trips") +
       xlab("Difference in Travel Time \n (Minutes)") +
       ggtitle("Flooded Trips") + 
@@ -141,32 +142,11 @@ block.trips$rem.time[block.trips$rem.time < 0] <- 0
 
 block.trips$tr.time1 <- block.trips$tr.time + block.trips$rem.time
 
-# generate the average travel time by time of day according to blocks status
-
-block.trips <- group_by(block.trips, ID_ORDEM, hour.f)
-
-block.trips.1 <- summarise(block.trips, tr.time1 = mean(tr.time1))
-names(block.trips.1)[names(block.trips.1) == "tr.time1"] <- "block.time"
-
-# subset to trips which do not encounter blocks or floods 
-
-no.blocks <- merged.trips[merged.trips$blocks == 0,]
-no.blocks <- group_by(no.blocks, ID_ORDEM, hour.f)
-
-no.blocks.1 <- summarise(no.blocks, tr.time = mean(tr.time))
-
-# merge
-
-block.trips.1 <- merge(block.trips.1, no.blocks.1, by = c("ID_ORDEM","hour.f"), all.x = TRUE)
-
-# calculate difference in travel times
-
-block.trips.1$diff <- block.trips.1$block.time - block.trips.1$tr.time
-
 
 ggplot() +
-      geom_histogram(aes(diff), 
-                     binwidth = 1, data = block.trips.1) +
+      geom_histogram(aes(tr.time1), 
+                     binwidth = 1, data = block.trips) +
+      geom_vline(aes(xintercept = mean(block.trips$tr.time1)), color = "red") + 
       ylab("Number of Trips") +
       xlab("Difference in Travel Time \n (Minutes)") +
       coord_cartesian(ylim = c(0, 150)) +
