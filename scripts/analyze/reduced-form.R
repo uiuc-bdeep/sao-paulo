@@ -65,17 +65,13 @@ stargazer(m1, m2, m3, m4,
           df = FALSE,
           title = "Reduced Form Model",
           dep.var.labels = c("Trip Duration"),
-          covariate.labels = c("Blocks Duration",
-                               "Floods Duration",
-                               "Light Rain",
-                               "Moderate Rain",
-                               "Heavy Rain"),
           notes = "Standard errors clustered at trip level.",
+          digits = 3,
           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
                            c("Month FE", "N", "Y", "Y", "Y"),
                            c("Day of Week FE", "N", "N", "Y", "Y"),
                            c("Hour FE", "N", "N", "N", "Y")),
-                   out = paste0(out.path, "reduced-form.tex"))
+          out = paste0(out.path, "reduced-form.tex"))
 
 # reduced form model with peak hour interactions -----------------------------------------------
 
