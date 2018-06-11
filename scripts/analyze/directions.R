@@ -31,6 +31,7 @@ HH.path <- "analysis/HH.rds"
 # output 
 
 coef.path <- "intermediate/floods/iv2-coef(traffic).rds"
+out.path <- "views/floods/"
 
 # read files -----------------------------------------------------------------------------------
 
@@ -75,32 +76,32 @@ trips$evening.traffic <- as.numeric(ifelse(trips$late.peak == 1 &
                                            trips$traffic_o == 1, 1, 0))
 summary(trips$evening.traffic)
 
-# 'with.traffic' defined as either traveling to downtown in the morning or traveling away from downtown in the evening
-
-trips$with.traffic <- as.numeric(ifelse(trips$morning.traffic == 1 |
-                                        trips$evening.traffic == 1 , 1, 0))
-summary(trips$with.traffic)
-
 # 'against.traffic' defined as traveling away from downtown in the morning or traveling to downtown in the evening
 
-trips$against.traffic <- as.numeric(ifelse(trips$with.traffic == 0 &
-                                                   (trips$early.peak == 1 |
-                                                    trips$late.peak == 1  ), 1, 0))
-summary(trips$against.traffic)
+trips$morning.against <- as.numeric(ifelse(trips$early.peak == 1 &
+                                           trips$traffic_o == 1, 1, 0))
+
+trips$evening.against <- as.numeric(ifelse(trips$late.peak == 1 &
+                                           trips$traffic_d == 1, 1, 0))
+
 
 # 'normal.traffic' defined as all other trips not going to downtown and during off-peak hours of the day
 
-trips$normal.traffic <- as.numeric(ifelse(trips$with.traffic == 0 & 
-                                          trips$against.traffic == 0, 1, 0))
-summary(trips$normal.traffic)
+trips$uncongested <- as.numeric(ifelse(trips$morning.traffic == 0 &
+                                       trips$evening.traffic == 0 &
+                                       trips$morning.against == 0 &
+                                       trips$evening.against == 0, 1, 0))
+summary(trips$uncongested)
 
 saveRDS(trips, trips.path)
 
 # second stage ---------------------------------------------------------------------------------
 
-iv <- felm(tr.time ~ blocks:fitted.blocks:with.traffic + floods:fitted.floods:with.traffic +
-                     blocks:fitted.blocks:against.traffic + floods:fitted.floods:against.traffic +
-                     blocks:fitted.blocks:normal.traffic + floods:fitted.floods:normal.traffic +
+iv <- felm(tr.time ~ blocks:fitted.blocks:morning.traffic + floods:fitted.floods:morning.traffic +
+                     blocks:fitted.blocks:morning.against + floods:fitted.floods:morning.against +
+                     blocks:fitted.blocks:evening.traffic + floods:fitted.floods:evening.traffic +
+                     blocks:fitted.blocks:evening.against + floods:fitted.floods:evening.against +
+                     blocks:fitted.blocks:uncongested + floods:fitted.floods:uncongested +
                      rain.bins1 + rain.bins2 + rain.bins3
                      | ID_ORDEM + month + wd + hour.f, data = trips)
 
@@ -112,6 +113,7 @@ saveRDS(iv.coef, coef.path)
 # LaTeX output
 stargazer(iv,
           type = "latex",
+          digits = 6, 
           dep.var.labels = c("Trip Duration"),
           df = FALSE,
           add.lines = list(c("Trip FE", "Y"),
