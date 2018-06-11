@@ -49,8 +49,8 @@ coef2 <- readRDS(coef2.path)
 
 coef2 <- coef2[which(coef2$model == "iv.4"),] # taking model that includes the most FEs
 
-pr.blocks <- coef2$Estimate[[1]]
-pr.floods <- coef2$Estimate[[2]]
+pr.blocks <- coef2$Estimate[[4]]
+pr.floods <- coef2$Estimate[[5]]
 
 # ----------------------------------------------------------------------------------------------
 
