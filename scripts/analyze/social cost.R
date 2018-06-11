@@ -28,17 +28,6 @@ peak.path <- "intermediate/floods/iv2-coef (peak).rds"
 dir.path <- "intermediate/floods/iv2-coef(traffic).rds"
 
 # ----------------------------------------------------------------------------------------------
-# generating predicted values for blocks, floods and spillovers
-
-# read dataset of IV 1st stage coefficients
-# average values of a flood duration given accumulated rain 
-
-coef <- readRDS(coef.path)
-
-# assign names to each coefficient
-
-blocks.rain <- coef$Estimate[[4]]
-floods.rain <- coef$Estimate[[8]]
 
 # read dataset of IV 2nd stage coefficients
 # effect of predicted flood duration on travel time (per minute)
@@ -92,13 +81,18 @@ flood.days <- 87
 
 # Generate added travel time per year using regression coefficients
 
+# Average duration
+
+ave.blocks <- 126
+ave.floods <- 159
+
 # Blocks
 
-Blocks <- blocks.rain * pr.blocks * block.days
+Blocks <- ave.blocks * pr.blocks * block.days
 
 # Floods
 
-Floods <- floods.rain * pr.blocks * block.days
+Floods <- ave.floods * pr.blocks * block.days
 
 # Output
 
