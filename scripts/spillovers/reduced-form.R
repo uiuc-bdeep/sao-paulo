@@ -37,25 +37,25 @@ trips <- readRDS(trips.path)
 
 # trip FE --------------------------------------------------------------------------------------
 
-m1 <- felm(tr.time ~ mean 
+m1 <- felm(tr.time ~ spillovers 
                     + rain.bins1 + rain.bins2 + rain.bins3| ID_ORDEM | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month FE ------------------------------------------------------------------------------
 
-m2 <- felm(tr.time ~ mean
+m2 <- felm(tr.time ~ spillovers
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week FE ----------------------------------------------------------------
 
-m3 <- felm(tr.time ~ mean
+m3 <- felm(tr.time ~ spillovers
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd | 0 | ID_ORDEM, data = trips)
 
 
 # trip + month + day of week + time of day FE --------------------------------------------------
 
-m4 <- felm(tr.time ~ mean
+m4 <- felm(tr.time ~ spillovers
                      + rain.bins1 + rain.bins2 + rain.bins3 | ID_ORDEM + month + wd + hour.f | 0 | ID_ORDEM, data = trips)
 
 # output ---------------------------------------------------------------------------------------
@@ -64,10 +64,6 @@ stargazer(m1, m2, m3, m4,
           type = "latex",
           df = FALSE,
           dep.var.labels = c("Trip Duration"),
-          covariate.labels = c("Spillovers Duration",
-                               "Light Rain",
-                               "Moderate Rain",
-                               "Heavy Rain"),
           notes = "Standard errors clustered at trip level.",
           add.lines = list(c("Trip FE", "Y", "Y", "Y", "Y"),
                            c("Month FE", "N", "Y", "Y", "Y"),
@@ -82,7 +78,7 @@ stargazer(m1, m2, m3, m4,
 
 # reduced form model with peak hour interactions -----------------------------------------------
 
-m5 <- felm(tr.time ~ mean:early.peak + mean:late.peak + mean:not.peak +
+m5 <- felm(tr.time ~ spillovers:early.peak + spillovers:late.peak + spillovers:not.peak +
                      rain.bins1 + rain.bins2 + rain.bins3
                      | ID_ORDEM + month + wd + hour.f| 0 | ID_ORDEM, data = trips)
 
