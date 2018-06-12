@@ -84,25 +84,32 @@ trips$res.floods <- trips$fduration.mean - residuals(iv.2)
 iv2.coef <- as.data.frame(summary(iv.2)$coefficients)
 iv2.coef$model <- "iv.2"
 
+# spillovers
+
+iv.3 <- felm(mean ~ spillovers:acc.rain + rain.bins1 + rain.bins2 + rain.bins3 
+             | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
+
+trips$fitted.spill <- fitted(iv.3)
+trips$res.spill <- trips$mean - residuals(iv.3)
+
+iv3.coef <- as.data.frame(summary(iv.3)$coefficients)
+iv3.coef$model <- "iv.3"
+
 # output ----------------------------------------------------------------------------------------
 
-coef <- rbind(iv1.coef, iv2.coef)
+coef <- rbind(iv1.coef, iv2.coef, iv3.coef)
 saveRDS(coef, coef.path)
 
-stargazer(iv.1, iv.2, 
+stargazer(iv.1, iv.2, iv.3,
           type = "latex",
           df = FALSE,
           dep.var.labels = c("Blocks Duration",
-                             "Floods Duration"),
-          covariate.labels = c("Light Rain", 
-                               "Moderate Rain",
-                               "Heavy Rain",
-                               "Blocks $\times$ Acc. Rain",
-                               "Floods $\times$ Acc. Rain"),
-          add.lines = list(c("Trip FE", "N", "N"),
-                           c("Month FE", "Y", "Y"),
-                           c("Day of Week FE", "Y","Y"),
-                           c("Hour FE", "Y", "Y")),
+                             "Floods Duration",
+                             "Spillovers Duration"),
+          add.lines = list(c("Trip FE", "N", "N", "N"),
+                           c("Month FE", "Y", "Y", "Y"),
+                           c("Day of Week FE", "Y","Y", "Y"),
+                           c("Hour FE", "Y", "Y","Y")),
           notes = "Standard errors are clustered at the trip level.",
           title = "IV First Stage",
           out = paste0(out.path, "iv-1ststage.tex"))
