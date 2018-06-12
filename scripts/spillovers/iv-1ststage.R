@@ -42,7 +42,7 @@ trips <- readRDS(trips.path)
 # IV  - first stage ----------------------------------------------------------------------------
 
 # spillovers
-# mean = average duration of blocks and floods per trip 
+# mean = average duration of blocks and floods coinciding with spillover trips
 
 iv <- felm(mean ~ spillovers:acc.rain + rain.bins1 + rain.bins2 + rain.bins3 
              | month + wd + hour.f | 0 | ID_ORDEM, data = trips)
