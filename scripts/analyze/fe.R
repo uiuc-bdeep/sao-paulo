@@ -203,3 +203,47 @@ stargazer(iv,
           notes = "Standard errors are clustered at the trip level.",
           title = "IV Second Stage with Traffic Directions")
 
+# second stage with trip duration bins ---------------------------------------------------------------------------------
+
+iv <- felm(tr.time ~ blocks:res.blocks:short.trips + floods:res.floods:short.trips + 
+                     blocks:res.blocks:med.trips + floods:res.floods:med.trips +    
+                     blocks:res.blocks:long.trips + floods:res.floods:long.trips + 
+                     rain.bins1 + rain.bins2 + rain.bins3
+                     | ID_ORDEM + month + wd + hour.f, data = trips)
+
+
+# LaTeX output
+stargazer(iv,
+          type = "latex",
+          digits = 6, 
+          dep.var.labels = c("Trip Duration"),
+          df = FALSE,
+          add.lines = list(c("Trip FE", "Y"),
+                           c("Month FE", "Y"),
+                           c("Day of Week FE", "Y"),
+                           c("Hour FE", "Y")),
+          notes = "Standard errors are clustered at the trip level.",
+          title = "IV Second Stage with Trip Duration Bins")
+
+# second stage with trip duration bins and spillovers  ---------------------------------------------------------------------------------
+
+iv <- felm(tr.time ~ blocks:res.blocks:short.trips + floods:res.floods:short.trips + spillovers:res.spill:short.trips +
+                     blocks:res.blocks:med.trips + floods:res.floods:med.trips + spillovers:res.spill:med.trips +    
+                     blocks:res.blocks:long.trips + floods:res.floods:long.trips + spillovers:res.spill:long.trips +
+                     rain.bins1 + rain.bins2 + rain.bins3
+                     | ID_ORDEM + month + wd + hour.f, data = trips)
+
+
+# LaTeX output
+stargazer(iv,
+          type = "latex",
+          digits = 6, 
+          dep.var.labels = c("Trip Duration"),
+          df = FALSE,
+          add.lines = list(c("Trip FE", "Y"),
+                           c("Month FE", "Y"),
+                           c("Day of Week FE", "Y"),
+                           c("Hour FE", "Y")),
+          notes = "Standard errors are clustered at the trip level.",
+          title = "IV Second Stage with Trip Duration Bins")
+
